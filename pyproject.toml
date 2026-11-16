@@ -51,8 +51,10 @@ dependencies = [
   "natural-keys",
   "psycopg[binary]",
   "pytz",
+  "requests",
   "sentry-sdk",
   "social-auth-app-django",
+  "tenacity",
   "unicef-security",
 ]
 urls.Documentation = "https://unicef.github.io/hope-dashboard/"

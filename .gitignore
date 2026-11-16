@@ -22,3 +22,4 @@ src/hope_dashboard/version.py
 
 node_modules/
 dist/
+downloaded_files/

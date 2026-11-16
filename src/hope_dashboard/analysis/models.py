@@ -1,0 +1,77 @@
+from django.db import models
+from django_celery_boost.models import CeleryTaskModel
+
+
+class TimeGrain(models.TextChoices):
+    DAILY = "daily", "Daily"
+    MONTHLY = "monthly", "Monthly"
+    YEARLY = "yearly", "Yearly"
+
+
+class ProgramType(models.TextChoices):
+    """Cohort a programme belongs to, derived from the data collecting type."""
+
+    STANDARD = "STANDARD", "Standard programmes"
+    SOCIAL = "SOCIAL", "Social workers"
+
+
+class BaseAggregate(models.Model):
+    """
+    Abstract base model for all dashboard aggregates.
+
+    Includes time grain to support explicit pre-aggregated rollups.
+    """
+
+    date = models.DateField(db_index=True)
+    time_grain = models.CharField(
+        max_length=10,
+        choices=TimeGrain.choices,
+        default=TimeGrain.DAILY,
+        db_index=True,
+    )
+    country_slug = models.CharField(max_length=100, db_index=True)
+    dimension_type = models.CharField(max_length=50, db_index=True)
+    dimension_value = models.CharField(max_length=255, db_index=True)
+    program_type = models.CharField(
+        max_length=20,
+        choices=ProgramType.choices,
+        default=ProgramType.STANDARD,
+        db_index=True,
+    )
+
+    class Meta:
+        abstract = True
+        unique_together = ("date", "time_grain", "country_slug", "dimension_type", "dimension_value", "program_type")
+        indexes = [
+            models.Index(fields=["dimension_type", "date"]),
+            models.Index(fields=["country_slug", "dimension_type"]),
+            models.Index(fields=["dimension_type", "country_slug", "date", "time_grain"]),
+            models.Index(fields=["program_type", "dimension_type"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.date} ({self.time_grain}) {self.country_slug} {self.dimension_type}:{self.dimension_value}"
+
+
+class FinancialAggregate(BaseAggregate):
+    total_usd = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+    total_qty = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+    payment_count = models.IntegerField(default=0)
+
+
+class DemographicAggregate(BaseAggregate):
+    total_beneficiaries = models.IntegerField(default=0)
+    total_children = models.IntegerField(default=0)
+    total_pwd = models.IntegerField(default=0)
+    total_households = models.IntegerField(default=0)
+
+
+class SyncDailyAggregatesJob(CeleryTaskModel):  # type: ignore[misc]
+    default_celery_task_name = "hope_dashboard.analysis.tasks.sync_daily_aggregates"
+    celery_task_name = "hope_dashboard.analysis.tasks.sync_daily_aggregates"
+
+    error_message = models.TextField(blank=True, default="")
+
+    class Meta(CeleryTaskModel.Meta):  # type: ignore[misc]
+        verbose_name = "Sync Daily Aggregates Job"
+        verbose_name_plural = "Sync Daily Aggregates Jobs"
