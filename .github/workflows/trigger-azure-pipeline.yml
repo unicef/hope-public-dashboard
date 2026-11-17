@@ -41,10 +41,19 @@ jobs:
           IFS=',' read -ra pipelines <<< "$AZURE_PIPELINE_IDS"
           for pipeline in "${pipelines[@]}"; do
             echo "Triggering deploy for pipeline ${pipeline}"
-            curl -fsS -L \
+            response=$(curl -sS \
+              -o /tmp/azure-response.json \
+              -w '%{http_code}' \
               -u ":${AZURE_PAT}" \
               -H "Content-Type: application/json" \
               -H "Content-Length: ${content_length}" \
               -d "$json_body" \
-              "https://dev.azure.com/${AZURE_ORGANIZATION}/${AZURE_PROJECT}/_apis/pipelines/${pipeline}/runs?api-version=7.1-preview.1"
+              "https://dev.azure.com/${AZURE_ORGANIZATION}/${AZURE_PROJECT}/_apis/pipelines/${pipeline}/runs?api-version=7.1-preview.1")
+            run_id=$(jq -r '.id // empty' /tmp/azure-response.json 2>/dev/null || true)
+            if [ "$response" != "200" ] || [ -z "$run_id" ]; then
+              echo "::error::Azure pipeline ${pipeline} was not triggered (HTTP ${response}). Check AZURE_PAT."
+              head -c 500 /tmp/azure-response.json
+              exit 1
+            fi
+            echo "Azure pipeline ${pipeline} run ${run_id} queued"
           done
