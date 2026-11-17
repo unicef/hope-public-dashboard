@@ -53,6 +53,29 @@
     };
     const countryStopWords = new Set(['of', 'the', 'and', 'state', 'old', 'republic']);
 
+    // Display-only labels for values that arrive as database keys. These never
+    // replace the raw value used for filtering or URL state.
+    const labelAliases = {
+        'social policy': 'Social Policy',
+        'multi purpose': 'Multi-Purpose Cash',
+        'multi purpose cash': 'Multi-Purpose Cash',
+        'multipurpose cash': 'Multi-Purpose Cash',
+        'mpc': 'Multi-Purpose Cash',
+        'transfer to account': 'Transfer to Account',
+        'cash over the counter': 'Cash Over the Counter',
+        'pre paid card': 'Pre-Paid Card',
+        'prepaid card': 'Pre-Paid Card',
+        'atm card': 'ATM Card',
+        'wash': 'WASH'
+    };
+
+    function formatLabel(value) {
+        if (!value) return '';
+        const key = String(value).trim().toLowerCase().replace(/[_-]+/g, ' ');
+        if (labelAliases[key]) return labelAliases[key];
+        return key.replace(/\b\w/g, char => char.toUpperCase());
+    }
+
     function formatCountryName(name) {
         if (!name) return '';
         return String(name).replace(/[-_]/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
@@ -165,6 +188,7 @@
         getStableColor: getStableColor,
         getRegionColor: getRegionColor,
         timeAxisLabel: timeAxisLabel,
+        formatLabel: formatLabel,
         formatCountryName: formatCountryName,
         countryKey: countryKey,
         initCountryFilter: initCountryFilter,

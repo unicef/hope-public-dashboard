@@ -125,6 +125,10 @@ def test_public_aggregate_api_demographic_monthly(client):
 def test_public_assets_are_available():
     for path in [
         "css/public.css",
+        "fonts/NotoSans-Regular.woff2",
+        "fonts/NotoSans-Bold.woff2",
+        "fonts/NotoSansArabic-Regular.woff2",
+        "fonts/NotoSansSC-Regular.woff2",
         "js/echarts.min.js",
         "js/d3.min.js",
         "js/topojson-client.min.js",
