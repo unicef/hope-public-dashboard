@@ -26,6 +26,8 @@ DEFAULTS = {
     "CELERY_TASK_ALWAYS_EAGER": (bool, False),
     "CONSTANCE_DATABASE_CACHE_BACKEND": (str, ""),
     "CORS_ALLOWED_ORIGINS": (list, []),
+    "CSP_DEFAULT_SRC": (list, [], [], False, ""),
+    "CSP_IMG_SRC": (list, [], [], False, ""),
     "CSP_REPORT_ONLY": (bool, False, True),
     "CSRF_COOKIE_NAME": (str, "hope_dashboard"),
     "CSRF_COOKIE_SECURE": (bool, True, False),
@@ -40,6 +42,7 @@ DEFAULTS = {
     "EMAIL_HOST_USER": (str, ""),
     "EMAIL_PORT": (int, ""),
     "EMAIL_USE_TLS": (bool, True),
+    "ENABLE_WEBSOCKETS": (bool, False, False, False, "Whether to enable WebSockets support."),
     "ENVIRONMENT": (str, "production", "develop", False, "Environment"),
     "EXTRA_APPS": (list, "", "", False, ""),  # nosec
     "EXTRA_AUTHENTICATION_BACKENDS": (list, [], [], False, "Extra authentications backends enabled to add."),
@@ -64,6 +67,7 @@ DEFAULTS = {
     "REDIS_TSDB_URL": (str, "redis://localhost:6379/2"),
     "SECRET_KEY": (str, ""),
     "SECURE_CONTENT_TYPE_NOSNIFF": (bool, True, True, False, setting("secure-content-type-nosniff")),
+    "SECURE_SSL_REDIRECT": (bool, False, False, False, setting("secure-ssl-redirect")),
     "SENTRY_DSN": (str, ""),
     "SENTRY_ENVIRONMENT": (str, "production", "develop", False, "Sentry environment"),
     "SECURE_HSTS_SECONDS": (int, 31536000, 0, False, setting("secure-hsts-seconds")),
@@ -87,6 +91,7 @@ DEFAULTS = {
     "SESSION_COOKIE_AGE": (int, 86400, 86400, False, ""),
     "SESSION_EXPIRE_AT_BROWSER_CLOSE": (bool, False, False, False, ""),
     "SENTRY_ENABLED": (bool, False),
+    "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (bool, False),
     "STATIC_ROOT": (str, os.path.join(tempfile.gettempdir(), "hope_dashboard", "static")),
     "STREAMING_BROKER_URL": (str, "", ""),
     "SUPERUSERS": (

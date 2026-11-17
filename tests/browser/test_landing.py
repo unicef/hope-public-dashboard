@@ -56,6 +56,8 @@ def test_landing_page_renders_all_charts(browser):
     )
 
     browser.open("/")
+    browser.set_window_size(1600, 1200)
+    browser.sleep(1)
     browser.wait_for_text("Explore the evidence", timeout=15)
 
     for selector in [
@@ -69,6 +71,25 @@ def test_landing_page_renders_all_charts(browser):
     assert browser.get_text("#kpi-children") == "50"
     assert browser.get_text("#kpi-families") == "20"
     assert browser.get_text("#kpi-individuals") == "100"
+
+    assert browser.execute_script("return window.innerWidth") >= 1280
+    layout = browser.execute_script(
+        """
+        const hero = document.getElementById('landing-hero').getBoundingClientRect();
+        const glance = document.getElementById('landing-glance').getBoundingClientRect();
+        const kpis = getComputedStyle(document.getElementById('landing-kpis')).gridTemplateColumns;
+        return {
+            heroRight: hero.right,
+            glanceLeft: glance.left,
+            heroTop: hero.top,
+            glanceTop: glance.top,
+            kpiColumns: kpis.split(' ').length
+        };
+        """
+    )
+    assert layout["heroRight"] <= layout["glanceLeft"] + 1
+    assert abs(layout["heroTop"] - layout["glanceTop"]) < 5
+    assert layout["kpiColumns"] >= 12
 
     assert "Noto Sans" in browser.execute_script("return getComputedStyle(document.body).fontFamily")
 

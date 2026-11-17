@@ -21,6 +21,9 @@ urlpatterns = [
     path("favicon.ico", serve, kwargs={"document_root": settings.STATIC_ROOT, "path": "favicon.ico"}),
     path("admin/", site.urls),
     path("social/", include("social_django.urls", namespace="social")),
+    path("security/", include(("unicef_security.urls", "unicef_security"))),
+    # unicef-security's own templates use the legacy ``security`` namespace.
+    path("security/", include(("unicef_security.urls", "unicef_security"), namespace="security")),
     path("issues/", include("issues.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("adminactions/", include("adminactions.urls")),

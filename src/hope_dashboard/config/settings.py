@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "hope_dashboard.ui.theme",
     "hope_dashboard.ui",
     "hope_dashboard.modules.security",
+    "unicef_security",
     "unfold",  # before django.contrib.admin
     "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # optional, if special form elements are needed
@@ -102,11 +103,12 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
     *env("EXTRA_MIDDLEWARES"),
@@ -129,6 +131,7 @@ SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DEBUG", False)
 DEVELOPMENT = env.bool("DEVELOPMENT", False)
+ENABLE_WEBSOCKETS = env.bool("ENABLE_WEBSOCKETS", False)
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -219,6 +222,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
+                "unicef_security.context_processors.current_state",
                 "hope_dashboard.ui.context_processors.app",
             ],
         },
@@ -227,7 +231,7 @@ TEMPLATES = [
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 SECURE_CONTENT_TYPE_NOSNIFF = env("SECURE_CONTENT_TYPE_NOSNIFF")
-X_FRAME_OPTIONS = "DENY"
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env("SECURE_HSTS_INCLUDE_SUBDOMAINS")
@@ -243,7 +247,7 @@ CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE")
 SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE")
 SESSION_COOKIE_AGE = env("SESSION_COOKIE_AGE")
 SESSION_EXPIRE_AT_BROWSER_CLOSE = env("SESSION_EXPIRE_AT_BROWSER_CLOSE")
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 # See: http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"

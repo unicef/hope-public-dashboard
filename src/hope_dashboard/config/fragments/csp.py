@@ -1,33 +1,30 @@
-# Content-Security-Policy (django-csp).
-#
-# `'unsafe-inline'` / `'unsafe-eval'` are still required by the bundled
-# admin/editor/charting assets. Migrating away from them (nonces / hashes,
-# strict CSP) must be done incrementally; start with CONTENT_SECURITY_POLICY
-# in "report-only" mode and monitor before enforcing a stricter policy, see
-# https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html
+from .. import env
+
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
-        "default-src": (
-            "'self'",
-            "inline",
-            "unsafe-inline",
-            "data:",
-            "blob:",
+        "default-src": ["data:", "'self'", "'unsafe-inline'", "http://unpkg.com/"] + env("CSP_DEFAULT_SRC"),
+        "img-src": ["i.pravatar.cc", "'self'", "data:", "https://img.daisyui.com/", "https://www.unicef.org"]
+        + env("CSP_IMG_SRC"),
+        "style-src": ["'unsafe-inline'", "'self'", "cdnjs.cloudflare.com"] + [],
+        "script-src": [
             "'unsafe-inline'",
-            "localhost:8000",
-            "unpkg.com",
-            "browser.sentry-cdn.com",
-            "cdnjs.cloudflare.com",
-            "unisitetracker.unicef.io",
-            "cdn.jsdelivr.net",
-            "register.unicef.org",
-            "uni-hope-ukr-sr.azurefd.net",
-            "uni-hope-ukr-sr-dev.azurefd.net",
-            "uni-hope-ukr-sr-dev.unitst.org",
-        ),
+            "'self'",
+            "'unsafe-eval'",
+            "https://cdn.jsdelivr.net",
+            "https://unpkg.com/",
+            "https://cdn.tailwindcss.com",
+            "https://cdnjs.cloudflare.com",
+        ]
+        + [],
+        "connect-src": [
+            "'self'",
+            "https://cdn.jsdelivr.net",
+            "https://unpkg.com",
+            "ws:",
+            "wss:",
+        ],
         "frame-src": ["'self'"],
         "object-src": ["'none'"],
         "base-uri": ["'self'"],
-        "frame-ancestors": ("'self'",),
     }
 }

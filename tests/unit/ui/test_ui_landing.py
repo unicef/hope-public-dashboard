@@ -1,4 +1,5 @@
 import datetime as dt
+from pathlib import Path
 
 import pytest
 from django.contrib.staticfiles import finders
@@ -120,6 +121,28 @@ def test_public_aggregate_api_demographic_monthly(client):
     assert isinstance(data, list)
     assert data[0]["total_children"] == 50
     assert data[0]["program_type"] == "STANDARD"
+
+
+def test_public_page_sets_content_security_policy(client):
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "default-src" in response["Content-Security-Policy"]
+    assert response["X-Frame-Options"] == "SAMEORIGIN"
+
+
+def test_public_css_contains_responsive_layout_utilities():
+    css_path = finders.find("css/public.css")
+    assert css_path
+    css = Path(css_path).read_text()
+    for selector in [
+        "lg\\:grid-cols-12",
+        "lg\\:col-span-8",
+        "lg\\:col-span-4",
+        "sm\\:grid-cols-2",
+        "xl\\:grid-cols-12",
+    ]:
+        assert selector in css, selector
 
 
 def test_public_assets_are_available():
