@@ -110,3 +110,37 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: codecov-${{env.GITHUB_REF_NAME}}
           slug: ${{ github.repository }}
+
+  selenium-tests:
+    needs: [ changes ]
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.run_tests == 'true'
+    runs-on: ubuntu-latest
+    env: *test-env
+    services: *test-services
+    steps:
+      - uses: actions/checkout@v7
+        with: *checkout-config
+
+      - name: Install gettext
+        run: *gettext-step
+
+      - name: Install the latest version of uv
+        uses: *uv-step
+        with: *uv-config
+
+      - name: Install tox
+        run: *tox-install
+
+      - name: Setup selenium test suite
+        run: tox run -vv --notest --skip-missing-interpreters false -e selenium
+
+      - name: Run selenium tests
+        run: tox -e selenium
+
+      - name: Archive selenium results
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: selenium-log-report
+          path: latest_logs
+          retention-days: 5

@@ -1,19 +1,34 @@
-# Build and use your docker
+# Build and use the Docker image
 
-After you have cloned the repo, be sure to have a Redis and PostgreSQL server running on your machine
+After cloning the repo, make sure Redis and PostgreSQL are running.
 
+```shell
     export ADMIN_EMAIL=admin@example.com
     export ADMIN_PASSWORD=password
     export DATABASE_URL=postgres://postgres:@127.0.0.1:5432/hope_dashboard
-    export CACHE_URL=redis://127.0.0.1:6379/1?client_class=django_redis.client.DefaultClient
+    export REDIS_CACHE_URL=redis://127.0.0.1:6379/0
+    export REDIS_LOCK_URL="redis://127.0.0.1:6379/1?backend=django_redis.cache.RedisCache"
+    export REDIS_TSDB_URL=redis://127.0.0.1:6379/2
+    export REDIS_URL=redis://127.0.0.1:6379/3
 
     cd docker
 
     make build run
+```
 
+## Use the provided compose.yml
 
-## Use provided compose.yml
-
+```shell
     docker compose up
+```
 
-navigate to http://localhost:8000/admin/ and login using `admin@example.com/password`
+The stack starts the web app, Celery worker, Celery beat, PostgreSQL, and Redis.
+
+Navigate to <http://localhost:8000/admin/> and log in using
+`admin@example.com` / `password`.
+
+The published image is available at:
+
+```text
+unicef/hope-public-dashboard
+```

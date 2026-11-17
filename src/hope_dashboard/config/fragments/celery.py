@@ -1,3 +1,5 @@
+from celery.schedules import crontab  # type: ignore[import-untyped]
+
 from .. import env
 
 
@@ -11,3 +13,11 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 360 * 60
 CELERY_TASK_REVOKED_QUEUE = "queue_hope_revoked"
 CELERY_TASK_DEFAULT_QUEUE = "default"
+
+CELERY_BEAT_SCHEDULE = {
+    "sync_daily_aggregates": {
+        "task": "hope_dashboard.analysis.tasks.schedule_sync_daily_aggregates",
+        "schedule": crontab(hour=2, minute=0),  # Run daily at 2:00 AM UTC
+        "args": (),
+    },
+}

@@ -120,6 +120,18 @@ UNFOLD = {
                     },
                 ],
             },
+            {
+                "title": _("Data"),
+                "separator": True,
+                "collapsible": False,
+                "items": [
+                    {
+                        "title": _("Sync Daily Aggregates Jobs"),
+                        "icon": "sync",
+                        "link": reverse_lazy("admin:analysis_syncdailyaggregatesjob_changelist"),
+                    },
+                ],
+            },
         ],
     },
     "TABS": [
@@ -136,7 +148,7 @@ UNFOLD = {
         },
         {
             "models": [
-                "hope_live.user",
+                "hope_dashboard.user",
             ],
             "items": [
                 {

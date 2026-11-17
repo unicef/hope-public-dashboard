@@ -1,0 +1,369 @@
+import datetime as dt
+import logging
+from typing import Any
+
+import requests
+from celery import shared_task  # type: ignore[import-untyped]
+from constance import config
+from django.apps import apps
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.db import models, transaction
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+from hope_dashboard.analysis.models import (
+    DemographicAggregate,
+    FinancialAggregate,
+    ProgramType,
+    SyncDailyAggregatesJob,
+)
+
+logger = logging.getLogger(__name__)
+
+BATCH_SIZE = 1000
+
+# Report queries historically used a few spellings for the same cohort.
+PROGRAM_TYPE_ALIASES: dict[str, str] = {
+    "SOCIAL": ProgramType.SOCIAL,
+    "SOCIAL_WORKER": ProgramType.SOCIAL,
+    "SOCIAL_WORKERS": ProgramType.SOCIAL,
+    "SOCIAL WORKER": ProgramType.SOCIAL,
+    "SOCIAL WORKERS": ProgramType.SOCIAL,
+    "HOUSEHOLD": ProgramType.STANDARD,
+    "HOUSEHOLDS": ProgramType.STANDARD,
+    "STANDARD": ProgramType.STANDARD,
+}
+
+
+def _normalise_program_type(value: Any) -> str:
+    """Map a report cohort value onto the canonical vocabulary, defaulting to STANDARD."""
+    if value is None:
+        return ProgramType.STANDARD
+    return PROGRAM_TYPE_ALIASES.get(str(value).strip().upper(), ProgramType.STANDARD)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def _fetch_url_with_retry(url: str, headers: dict[str, str], timeout: int) -> requests.Response:
+    response = requests.get(url, headers=headers, timeout=timeout)
+    response.raise_for_status()
+    return response
+
+
+def _is_year_partitioned(datasets: list[dict[str, Any]]) -> bool:
+    """Report queries are normally split into one dataset per year."""
+    return any(dataset.get("arguments", {}).get("year") is not None for dataset in datasets)
+
+
+def _determine_target_years(datasets: list[dict[str, Any]], requested_years: list[int] | None) -> list[int]:
+    if not _is_year_partitioned(datasets):
+        # One dataset holds every year: it only needs to be processed once.
+        return [dt.date.today().year]
+    if requested_years:
+        return requested_years
+    years = []
+    for d in datasets:
+        y = d.get("arguments", {}).get("year")
+        if y:
+            years.append(int(y))
+    if not years:
+        years.append(dt.date.today().year)
+    return sorted(set(years))
+
+
+def _process_year_data(  # noqa: PLR0913, PLR0917
+    target_year: int,
+    datasets: list[dict[str, Any]],
+    base_url: str,
+    headers: dict[str, str],
+    job_id: str,
+    model_name: str,
+    update_fields: list[str],
+) -> int:
+    dataset_id = _find_dataset_id_for_year(datasets, target_year)
+    if not dataset_id:
+        logger.info(f"[Job {job_id}] No dataset found for year {target_year}")
+        return 0
+
+    logger.info(f"[Job {job_id}] Processing dataset ID {dataset_id} for year {target_year}")
+    data_endpoint = f"{base_url}{dataset_id}/data/"
+    all_rows = _fetch_all_pages(data_endpoint, headers, job_id)
+
+    if not all_rows:
+        logger.warning(f"[Job {job_id}] No data returned for year {target_year}")
+        return 0
+
+    logger.info(f"[Job {job_id}] Total rows fetched for year {target_year}: {len(all_rows)}")
+    save_aggregates(all_rows, target_year, model_name, update_fields)
+    return len(all_rows)
+
+
+def _invalidate_aggregates_cache() -> None:
+    """Drop cached aggregates API responses so dashboards show freshly synced data.
+
+    The API is decorated with ``cache_page`` (6 hours). Without this, a dashboard loaded
+    before a sync keeps receiving the previous - possibly empty - payload until the TTL
+    expires, even though the database has been updated.
+    """
+    try:
+        cache.delete_pattern("views.decorators.cache.cache_page.*")
+        cache.delete_pattern("views.decorators.cache.cache_header.*")
+    except AttributeError:  # cache backend without delete_pattern support
+        cache.clear()
+
+
+@shared_task(name="hope_dashboard.analysis.tasks.sync_daily_aggregates", bind=True)  # type: ignore[untyped-decorator]
+def sync_daily_aggregates(
+    self: Any, pk: int | None = None, version: int | None = None, target_years: list[int] | None = None
+) -> str:
+    """Fetch Aggregate data from Country Report API and update local DB."""
+    job = SyncDailyAggregatesJob.objects.filter(pk=pk).first() if pk else None
+    job_id = str(job.pk) if job else "N/A"
+
+    if job:
+        job.error_message = ""
+        job.save(update_fields=["error_message"])
+
+    try:
+        api_url = config.HOPE_COUNTRY_REPORT_API_URL
+        token = config.HOPE_COUNTRY_REPORT_API_TOKEN
+        headers = {"Authorization": f"Token {token}"}
+
+        configs = [
+            (config.HOPE_FINANCIAL_REPORT_QUERY_ID, "FinancialAggregate", ["total_usd", "total_qty", "payment_count"]),
+            (
+                config.HOPE_DEMOGRAPHIC_REPORT_QUERY_ID,
+                "DemographicAggregate",
+                ["total_beneficiaries", "total_children", "total_pwd", "total_households"],
+            ),
+        ]
+
+        total_rows = 0
+        errors = []
+
+        for query_id, model_name, update_fields in configs:
+            if not query_id:
+                continue
+
+            context = _prepare_sync_context(api_url, str(query_id), headers, job_id)
+            if not context:
+                errors.append(f"Failed to prepare sync context for query {query_id}")
+                continue
+
+            office_slug, datasets = context
+            years_to_sync = _determine_target_years(datasets, target_years)
+
+            base_url = f"{api_url}queries/{query_id}/dataset/"
+            for idx, target_year in enumerate(years_to_sync, 1):
+                self.update_state(
+                    state="PROGRESS",
+                    meta={"current_year": target_year, "model": model_name, "progress": f"{idx}/{len(years_to_sync)}"},
+                )
+                try:
+                    total_rows += _process_year_data(
+                        target_year, datasets, base_url, headers, job_id, model_name, update_fields
+                    )
+                except Exception as e:
+                    logger.exception(f"[Job {job_id}] Error syncing {model_name} for year {target_year}: {e}")
+                    errors.append(f"{model_name} Year {target_year}: {e}")
+
+        _invalidate_aggregates_cache()
+
+        if errors and job:
+            job.error_message = "\n".join(errors)
+            job.save(update_fields=["error_message"])
+
+        return f"Successfully synced {total_rows} rows."
+
+    except Exception as e:
+        if job:
+            job.error_message = str(e)
+            job.save(update_fields=["error_message"])
+        raise
+
+
+def _prepare_sync_context(
+    api_url: str, query_id: str, headers: dict[str, str], job_id: str
+) -> tuple[str, list[dict[str, Any]]] | None:
+    """Fetch query and available datasets."""
+    try:
+        url = f"{api_url}queries/{query_id}/dataset"
+        logger.info(f"[Job {job_id}] Fetching datasets from: {url}")
+        resp = _fetch_url_with_retry(url, headers, 10)
+
+        # API URL usually ends with /offices/<slug>/
+        # e.g. https://.../api/offices/global/
+        try:
+            office_slug = api_url.rstrip("/").split("/")[-1]
+        except IndexError:
+            office_slug = "global"
+
+        datasets = resp.json()
+        if isinstance(datasets, dict) and "results" in datasets:
+            datasets = datasets["results"]
+
+        logger.info(f"[Job {job_id}] Found {len(datasets)} datasets for office '{office_slug}'")
+        return office_slug, datasets
+
+    except Exception:
+        logger.exception(f"[Job {job_id}] Error preparing sync context")
+        return None
+
+
+def _find_dataset_id_for_year(datasets: list[dict[str, Any]], year: int) -> int | None:
+    """Locate the dataset ID matching the target year.
+
+    Not every report query is partitioned by year: some expose a single dataset with no
+    ``year`` argument that holds every year's rows. Such a dataset is processed once
+    instead of being skipped for lacking a ``year`` argument.
+    """
+    for dataset in datasets:
+        if dataset.get("arguments", {}).get("year") == year:
+            return int(dataset["id"])
+    if len(datasets) == 1 and not _is_year_partitioned(datasets):
+        return int(datasets[0]["id"])
+    return None
+
+
+def _fetch_all_pages(data_endpoint: str, headers: dict[str, str], job_id: str) -> list[dict[str, Any]]:
+    """Fetch all rows from the endpoint handling pagination."""
+    all_rows: list[dict[str, Any]] = []
+    current_url: str | None = f"{data_endpoint}?page_size={BATCH_SIZE}"
+    page_count = 0
+
+    while current_url:
+        page_count += 1
+        logger.info(f"[Job {job_id}] Fetching page {page_count}...")
+        try:
+            response = _fetch_url_with_retry(current_url, headers, 60)
+        except Exception as e:
+            logger.exception(f"[Job {job_id}] Error fetching page {page_count}: {e}")
+            break
+
+        raw_data: dict[str, Any] = response.json()
+        if isinstance(raw_data, dict) and "results" in raw_data:
+            rows = raw_data.get("results", [])
+            if not rows:
+                break
+            all_rows.extend(rows)
+            current_url = raw_data.get("next")
+        else:
+            rows = raw_data.get("data", []) or (raw_data if isinstance(raw_data, list) else [])
+            if not rows:
+                break
+            all_rows.extend(rows)
+            logger.info(f"[Job {job_id}] Received {len(rows)} rows (non-paginated)")
+            break
+
+    return all_rows
+
+
+def _field_value(model_class: Any, field: str, item: dict[str, Any]) -> Any:
+    value = item.get(field)
+    if value is None:
+        model_field = model_class._meta.get_field(field)
+        if model_field.null:
+            return None
+        if isinstance(model_field, (models.IntegerField, models.DecimalField, models.FloatField)):
+            return 0
+        return ""
+    return value
+
+
+BASE_UNIQUE_FIELDS = ("date", "time_grain", "country_slug", "dimension_type", "dimension_value")
+
+
+@shared_task(name="hope_dashboard.analysis.tasks.save_aggregates")  # type: ignore[untyped-decorator]
+def save_aggregates(rows: list[dict[str, Any]], year: int, model_name: str, update_fields: list[str]) -> None:
+    ModelClass = apps.get_model("analysis", model_name)
+
+    # Deduplicate rows by unique fields to prevent "ON CONFLICT DO UPDATE command cannot affect row a second time"
+
+    unique_fields = list(ModelClass._meta.unique_together[0])
+    extra_fields = [f for f in unique_fields if f not in BASE_UNIQUE_FIELDS]
+
+    unique_rows = {}
+    default_grain = "monthly" if model_name == "DemographicAggregate" else "daily"
+    for item in rows:
+        item_date = item.get("date")
+        if not item_date:
+            continue
+        item["program_type"] = _normalise_program_type(item.get("program_type"))
+        raw_dim_val = item.get("dimension_value")
+        dim_val = "unknown" if raw_dim_val is None else str(raw_dim_val)
+
+        time_grain = item.get("time_grain") or default_grain
+
+        base_key = (
+            str(item_date),
+            time_grain,
+            item.get("country_slug", "unknown"),
+            item.get("dimension_type", "unknown"),
+            dim_val.strip().upper(),
+        )
+        key = base_key + tuple(str(item.get(f) or "").strip() for f in extra_fields)
+        unique_rows[key] = item
+
+    with transaction.atomic():
+        batch = []
+        for key, item in unique_rows.items():
+            kwargs = {f: key[i] for i, f in enumerate(BASE_UNIQUE_FIELDS)}
+            for i, f in enumerate(extra_fields):
+                kwargs[f] = key[len(BASE_UNIQUE_FIELDS) + i]
+            for field in update_fields:
+                kwargs[field] = _field_value(ModelClass, field, item)
+
+            batch.append(ModelClass(**kwargs))
+
+            if len(batch) >= BATCH_SIZE:
+                ModelClass.objects.bulk_create(
+                    batch,
+                    update_conflicts=True,
+                    unique_fields=unique_fields,
+                    update_fields=update_fields,
+                )
+                batch = []
+
+        if batch:
+            ModelClass.objects.bulk_create(
+                batch,
+                update_conflicts=True,
+                unique_fields=unique_fields,
+                update_fields=update_fields,
+            )
+
+        logger.info(
+            f"Saved {len(unique_rows)} unique records for {year} into {model_name} (out of {len(rows)} total rows)"
+        )
+
+
+@shared_task(name="hope_dashboard.analysis.tasks.schedule_sync_daily_aggregates")  # type: ignore[untyped-decorator]
+def schedule_sync_daily_aggregates(target_years: list[int] | None = None) -> None:
+    """Periodic task to create and queue a SyncDailyAggregatesJob."""
+    job = SyncDailyAggregatesJob.objects.create(description="Scheduled Daily Aggregate Sync")
+
+    # Bypass job.queue() to pass custom kwargs, then manually set the queued state
+    res = sync_daily_aggregates.delay(job.pk, job.version, target_years=target_years)
+    job.set_queued(res)
+
+
+@shared_task(name="hope_dashboard.analysis.tasks.clear_daily_aggregates")  # type: ignore[untyped-decorator]
+def clear_daily_aggregates(user_id: int) -> str:
+    """Delete all aggregate records from the database. Restricted to superusers."""
+    user_model = get_user_model()
+    try:
+        user = user_model.objects.get(pk=user_id)
+    except user_model.DoesNotExist as err:
+        logger.warning(f"clear_daily_aggregates attempted with invalid user_id: {user_id}")
+        raise ValueError("Error: User not found.") from err
+
+    if not user.is_superuser:
+        logger.warning(f"clear_daily_aggregates attempted by non-superuser: {user.username}")
+        raise PermissionError("Permission denied: Only superusers can clear daily aggregates.")
+
+    count = 0
+    for model_class in [FinancialAggregate, DemographicAggregate]:
+        c, _ = model_class.objects.all().delete()  # type: ignore[attr-defined]
+        count += c
+
+    logger.info(f"Deleted {count} aggregate records by superuser {user.username}.")
+    return f"Successfully deleted {count} aggregate records."

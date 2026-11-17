@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/NotoSans-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/NotoSans-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans Arabic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/NotoSansArabic-Regular.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Noto Sans Arabic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/NotoSansArabic-Bold.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/NotoSansSC-Regular.woff2") format("woff2");
+  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/NotoSansSC-Bold.woff2") format("woff2");
+  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+
+@theme {
+  --font-sans: "Noto Sans", "Noto Sans Arabic", "Noto Sans SC", sans-serif;
+  --color-unicef-blue: #00aeef;
+  --color-unicef-blue-dark: #0047bb;
+  --color-unicef-cyan: #9adbe8;
+  --color-unicef-green: #004c45;
+  --color-unicef-yellow: #ffb500;
+  --color-unicef-orange: #ff7100;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(12% 0.042 264.695);
+  --color-base-200: oklch(20% 0.042 265.755);
+  --color-base-300: oklch(27% 0.041 260.031);
+  --color-base-content: oklch(96% 0.007 247.896);
+  --color-primary: oklch(68% 0.169 237.323);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(50% 0.134 242.749);
+  --color-secondary-content: oklch(98% 0.003 247.858);
+  --color-accent: oklch(62% 0.214 259.815);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(12% 0.042 264.695);
+  --color-neutral-content: oklch(98% 0.003 247.858);
+  --color-info: oklch(68% 0.169 237.323);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(69% 0.17 162.48);
+  --color-success-content: oklch(97% 0.021 166.113);
+  --color-warning: oklch(79% 0.184 86.047);
+  --color-warning-content: oklch(98% 0.026 102.212);
+  --color-error: oklch(64% 0.246 16.439);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  /* BRAND COLORS */
+  /* #00ADEF converted to OKLCH */
+  --color-primary: oklch(67.93% 0.176 237.98);
+  --color-primary-content: oklch(100% 0 0);
+  /* White text on blue */
+
+  /* BACKGROUNDS */
+  --color-base-100: oklch(100% 0 0);
+  /* Pure White (Card backgrounds) */
+  --color-base-200: oklch(98.5% 0 0);
+  /* Very Light Gray (Page background) */
+  --color-base-content: oklch(20% 0.04 265);
+  /* Dark Text */
+
+  --color-secondary: oklch(50% 0.134 242.749);
+  --color-secondary-content: oklch(98% 0.003 247.858);
+  --color-accent: oklch(62% 0.214 259.815);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(55% 0.046 257.417);
+  --color-neutral-content: oklch(98% 0.003 247.858);
+  --color-info: oklch(68% 0.169 237.323);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(69% 0.17 162.48);
+  --color-success-content: oklch(97% 0.021 166.113);
+  --color-warning: oklch(79% 0.184 86.047);
+  --color-warning-content: oklch(98% 0.026 102.212);
+  --color-error: oklch(64% 0.246 16.439);
+  --color-error-content: oklch(96% 0.015 12.422);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/**
+  * A catch-all path to Django template files, JavaScript, and Python files
+  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
+  *
+  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
+  * the scope of this path.
+  */
+@source "../../../templates/**/*.html";
+@source "../../../templatetags/**/*.py";
+@source "../../../../analysis/**/*.py";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark2 (&:where(.dark, .dark *));
+
+
+aside {
+  @apply text-gray-900 bg-gray-100;
+  @apply dark:text-white dark:bg-gray-900;
+
+  ul {
+    li {
+
+      a,
+      button {
+        @apply flex items-center p-2 rounded-lg;
+        @apply bg-gray-100 text-gray-700;
+        @apply dark:text-white dark:bg-gray-900;
+        @apply hover:bg-gray-300 dark:hover:bg-gray-700;
+      }
+    }
+  }
+}
+
+@media print {
+  header,
+  nav,
+  aside,
+  #sidebar,
+  .time-filter-wrapper,
+  #time-filter-container,
+  .risk-category-tab,
+  #program-filter,
+  .no-print {
+    display: none !important;
+  }
+
+  body, main, .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .shadow-2xs, .shadow-md, .shadow-xl {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

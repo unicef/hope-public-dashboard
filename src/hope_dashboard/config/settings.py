@@ -53,9 +53,11 @@ INSTALLED_APPS = [
     "admin_extra_buttons",
     "adminfilters",
     "adminactions",
+    "django_celery_boost",
     "social_django",
     "tailwind",
     "issues",
+    "hope_dashboard.analysis",
     *env("EXTRA_APPS"),
 ]
 
@@ -105,7 +107,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
     *env("EXTRA_MIDDLEWARES"),
@@ -157,17 +158,22 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # In a Windows environment this must be set to your system time zone.
 TIME_ZONE = env("TIME_ZONE")
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#GUAguage-code
-LANGUAGE_CODE = "en-us"
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
+LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "language"
 LANGUAGES = (
     ("es", "Español"),
     ("fr", "Français"),
     ("en", "English"),
     ("ar", "العربية"),
+    ("ru", "Русский"),
+    ("zh-hans", "简体中文"),
 )
 
-LOCALE_PATHS = (str(PACKAGE_DIR / "LOCALE"),)
+LOCALE_PATHS = (
+    str(PACKAGE_DIR / "locale"),
+    str(PACKAGE_DIR / "LOCALE"),
+)
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1

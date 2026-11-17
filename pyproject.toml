@@ -6,8 +6,8 @@ requires = [
 ]
 
 [project]
-name = "hope-dashboard"
-description = "HOPE Dashboard"
+name = "hope-public-dashboard"
+description = "UNICEF HOPE Public Dashboard"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -51,14 +51,16 @@ dependencies = [
   "natural-keys",
   "psycopg[binary]",
   "pytz",
+  "requests",
   "sentry-sdk",
   "social-auth-app-django",
+  "tenacity",
   "unicef-security",
 ]
-urls.Documentation = "https://unicef.github.io/hope-dashboard/"
-urls.Homepage = "https://github.com/unicef/hope-dashboard"
-urls.Issues = "https://github.com/unicef/hope-dashboard/issues"
-urls.Repository = "https://github.com/unicef/hope-dashboard"
+urls.Documentation = "https://unicef.github.io/hope-public-dashboard/"
+urls.Homepage = "https://github.com/unicef/hope-public-dashboard"
+urls.Issues = "https://github.com/unicef/hope-public-dashboard/issues"
+urls.Repository = "https://github.com/unicef/hope-public-dashboard"
 
 [dependency-groups]
 dev = [

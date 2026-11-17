@@ -1,7 +1,7 @@
 # envs to set before use this script
 .ONESHELL:
 VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
-DOCKER_IMAGE_NAME:=unicef/hope-dashboard
+DOCKER_IMAGE_NAME:=unicef/hope-public-dashboard
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
 STAGE?=dist
@@ -23,8 +23,7 @@ help:
 
 
 build: ## build docker image
-	@cd .. && uv build
-	DOCKER_BUILDKIT=1 cd .. && docker build \
+	DOCKER_BUILDKIT=1 docker build \
 			--progress=plain \
 			--build-arg VERSION=${VERSION} \
 			--build-arg GIT_SHA=${SOURCE_COMMIT} \
@@ -33,7 +32,7 @@ build: ## build docker image
 			--cache-from ${DOCKER_IMAGE_NAME}:local \
 			--cache-from ${DOCKER_IMAGE_NAME}:latest \
 			-t ${DOCKER_IMAGE_NAME}:local \
-			-f docker/Dockerfile .
+			-f Dockerfile ..
 	docker images | grep "${DOCKER_IMAGE_NAME}" | grep local
 
 .run:
@@ -43,8 +42,8 @@ build: ## build docker image
 			-e ADMIN_EMAIL="${ADMIN_EMAIL}" \
 			-e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 			-e ALLOWED_HOSTS="*" \
-			-e CACHE_DEFAULT="redis://host.docker.internal:6379/0" \
-			-e CELERY_BROKER_URL=redis://host.docker.internal:6379/0 \
+			-e CELERY_BROKER_URL="redis://host.docker.internal:6379/3" \
+			-e CELERY_RESULT_BACKEND="redis://host.docker.internal:6379/3" \
 			-e CSRF_COOKIE_SECURE=False \
 			-e CSRF_TRUSTED_ORIGINS=http://localhost \
 			-e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/hope_dashboard" \
@@ -53,6 +52,10 @@ build: ## build docker image
 			-e DJANGO_SETTINGS_MODULE=hope_dashboard.config.settings \
 			-e FERNET_KEY=123 \
 			-e LOGGING_LEVEL="DEBUG" \
+			-e REDIS_CACHE_URL="redis://host.docker.internal:6379/0" \
+			-e REDIS_LOCK_URL="redis://host.docker.internal:6379/1?backend=django_redis.cache.RedisCache" \
+			-e REDIS_TSDB_URL="redis://host.docker.internal:6379/2" \
+			-e REDIS_URL="redis://host.docker.internal:6379/3" \
 			-e SECRET_KEY="super-secret-key-just-for-testing" \
 			-e SENTRY_DSN="${SENTRY_DSN}" \
 			-e SOCIAL_AUTH_REDIRECT_IS_HTTPS="False" \
@@ -64,16 +67,16 @@ build: ## build docker image
 			${CMD}
 
 run: ## Run docker build
-	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:local \
 	$(MAKE) .run
 
 check: ## Check docker build
 	CMD='sh /usr/local/bin/check.sh' \
-	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:local \
 	$(MAKE) .run
 
 shell:  ## Run shell into docker
-	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:local \
 	RUN_OPTIONS="-it" \
  	CMD='/bin/bash' \
 	$(MAKE) .run

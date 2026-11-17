@@ -1,0 +1,1093 @@
+{% extends "public_layout.html" %}
+{% load i18n icons js static %}
+{% block content %}
+    <div id="global-evidence" tabindex="-1" class="scroll-mt-24">
+        <!-- Hero + at a glance -->
+        <section class="bg-white border-b border-black/10">
+            <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-8 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <div class="lg:col-span-8 relative overflow-hidden rounded-md bg-white min-h-[300px] flex items-center">
+                    <div class="absolute inset-y-0 right-0 w-full md:w-[62%] opacity-30 md:opacity-100 pointer-events-none">
+                        <img src="{% static 'images/background.png' %}"
+                             class="w-full h-full object-cover"
+                             style="object-position: 80% 15%"
+                             alt="" />
+                        <div class="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
+                    </div>
+                    <div class="relative z-10 p-7 lg:p-10 max-w-xl">
+                        <div class="inline-flex items-center mb-5 rounded-md bg-unicef-blue px-4 py-3">
+                            <img src="{% static 'images/logo-white-trimmed.png' %}" alt="UNICEF" class="h-14 w-auto" />
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-black tracking-tight leading-[1.05]">
+                            {% translate "Cash-based Assistance" %}
+                        </h1>
+                        <p class="mt-4 text-lg font-normal text-black leading-relaxed max-w-md">
+                            {% translate "Data and evidence to deliver cash assistance safely — and to show where it reaches children and families." %}
+                        </p>
+                        <div class="mt-6 flex flex-wrap items-center gap-3">
+                            <a href="#landing-kpis"
+                               class="bg-unicef-blue text-black px-5 py-3 rounded font-bold text-base hover:bg-unicef-blue-dark hover:text-white transition-colors">
+                                {% translate "Explore the evidence" %}
+                            </a>
+                            <a href="https://www.unicef.org/hope-hct/resources"
+                               target="_blank"
+                               rel="noopener"
+                               class="text-unicef-blue-dark font-bold text-base hover:underline">
+                                {% translate "About the Source of Data on UNICEF Cash Assistance" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <aside class="lg:col-span-4 bg-white border border-black/10 rounded-md p-5 lg:p-6 flex flex-col justify-center">
+                    <h2 class="text-base font-bold tracking-wider text-black mb-4">{% translate "Cash-based Assistance at a glance" %}</h2>
+                    <div class="pb-4 border-b border-black/10">
+                        <div class="flex items-center gap-2 text-base font-bold tracking-wider text-black mb-1">
+                            {% icon "hand-coins" "h-4 w-4" %}
+                            {% translate "Assistance Delivered" %}
+                        </div>
+                        <div id="glance-cash"
+                             class="text-4xl lg:text-5xl font-bold text-black leading-none">${{ total_cash_disbursed|default:"1.2B" }}</div>
+                        <div class="text-base font-normal text-black/70 mt-1">{% translate "Direct cash transfers" %}</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-4">
+                        <div class="flex items-start gap-2">
+                            <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "globe" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <div class="text-3xl font-bold text-black leading-none">{{ total_countries_glance }}+</div>
+                                <div class="text-base font-bold text-black mt-1">{% translate "Countries & territories" %}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "layers" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <div class="text-3xl font-bold text-black leading-none">{{ total_programs_glance }}+</div>
+                                <div class="text-base font-bold text-black mt-1">{% translate "Programmes" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-sm font-normal text-black/70 mt-4 pt-3 border-t border-black/10">
+                        {% translate "Source" %}: {% translate "HOPE Database" %}
+                    </div>
+                </aside>
+            </div>
+        </section>
+        <!-- Filter bar -->
+        <div class="static lg:sticky lg:top-0 z-30 bg-white border-b border-black/10">
+            <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-3 flex flex-wrap items-end gap-3">
+                <div class="w-full sm:w-auto">
+                    <label for="landing-year"
+                           class="block text-base font-bold tracking-wider text-black mb-1">{% translate "Year" %}</label>
+                    <select id="landing-year"
+                            class="w-full sm:w-auto text-base border-black/20 rounded-md text-black py-2.5 pl-3 pr-8 focus:ring-unicef-blue focus:border-unicef-blue shadow-2xs font-bold bg-white">
+                        <option value="all">{% translate "All years" %}</option>
+                    </select>
+                </div>
+                <div class="relative w-full sm:w-auto">
+                    <label id="country-filter-label"
+                           class="block text-base font-bold tracking-wider text-black mb-1">{% translate "Country" %}</label>
+                    <button id="country-filter-button"
+                            type="button"
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
+                            aria-controls="country-filter-panel"
+                            class="w-full sm:w-auto sm:min-w-[210px] flex items-center justify-between gap-3 text-base border border-black/20 rounded-md text-black py-2.5 pl-3 pr-3 focus:outline-none focus:ring-2 focus:ring-unicef-blue font-bold bg-white">
+                        <span id="country-filter-value">{% translate "All countries" %}</span>
+                        {% icon "chevron-down" "h-4 w-4 text-black/60" %}
+                    </button>
+                    <div id="country-filter-panel"
+                         class="hidden absolute left-0 right-0 sm:right-auto top-full mt-1 w-auto sm:w-[320px] max-w-none sm:max-w-[90vw] z-50 bg-white border border-black/10 rounded-md shadow-lg">
+                        <div class="p-2 border-b border-black/10">
+                            <label for="country-search" class="sr-only">{% translate "Search countries" %}</label>
+                            <div class="relative">
+                                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-black/40 pointer-events-none">
+                                    {% icon "search" "h-4 w-4" %}
+                                </span>
+                                <input id="country-search"
+                                       type="search"
+                                       placeholder="{% translate 'Search countries' %}"
+                                       class="w-full text-sm border border-black/20 rounded-md pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-unicef-blue" />
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between px-3 py-2 border-b border-black/10">
+                            <button id="country-select-all"
+                                    type="button"
+                                    class="text-xs font-bold text-black hover:underline">{% translate "Select all" %}</button>
+                            <button id="country-clear"
+                                    type="button"
+                                    class="text-xs font-bold text-black/60 hover:underline">{% translate "Clear" %}</button>
+                        </div>
+                        <div id="country-options"
+                             class="max-h-64 overflow-y-auto p-2 space-y-1"
+                             role="listbox"
+                             aria-multiselectable="true"></div>
+                        <div id="country-empty"
+                             class="hidden px-3 py-4 text-sm text-black/60 text-center">{% translate "No countries found" %}</div>
+                    </div>
+                </div>
+                <button id="landing-reset"
+                        type="button"
+                        class="text-base font-bold text-black hover:underline px-1 py-2">
+                    {% translate "Reset" %}
+                </button>
+                <div class="ml-auto text-sm sm:text-base font-bold text-black" id="latest-data-date">
+                    {% translate "Data as of" %} {{ latest_data_exact|default:latest_data_str }}
+                </div>
+                <div id="country-chips" class="basis-full w-full flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+        <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
+            <!-- KPI strip -->
+            <div id="landing-kpis" class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-6">
+                <div class="xl:col-span-9">
+                    <div class="flex items-center gap-2 text-base font-bold tracking-wider text-black mb-2">
+                        {% icon "users" "h-4 w-4" %}
+                        {% translate "People & Families" %}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="bg-white p-4 rounded-md border border-black/10 shadow-2xs">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="text-base text-black tracking-wider font-bold">{% translate "Children Reached" %}</div>
+                                <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">{% icon "baby" "h-4 w-4" %}</span>
+                            </div>
+                            <div id="kpi-children"
+                                 class="text-3xl lg:text-4xl font-bold text-black leading-tight">{{ total_children|default:"0" }}</div>
+                            <div class="text-base font-bold text-black mt-1"
+                                 id="kpi-children-note">{% translate "HOPE reach" %}</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-md border border-black/10 shadow-2xs">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="text-base text-black tracking-wider font-bold">{% translate "Families Reached" %}</div>
+                                <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">{% icon "house" "h-4 w-4" %}</span>
+                            </div>
+                            <div id="kpi-families"
+                                 class="text-3xl lg:text-4xl font-bold text-black leading-tight">{{ total_households|default:"0" }}</div>
+                            <div class="text-base font-bold text-black mt-1">{% translate "HOPE reach" %}</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-md border border-black/10 shadow-2xs">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="text-base text-black tracking-wider font-bold">{% translate "Individuals Reached" %}</div>
+                                <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">{% icon "users" "h-4 w-4" %}</span>
+                            </div>
+                            <div id="kpi-individuals"
+                                 class="text-3xl lg:text-4xl font-bold text-black leading-tight">{{ total_individuals_reached|default:"0" }}</div>
+                            <div class="text-base font-bold text-black mt-1">{% translate "People reached" %}</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-md border border-black/10 shadow-2xs">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="text-base text-black tracking-wider font-bold">{% translate "Social Workers Reached" %}</div>
+                                <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">{% icon "heart-handshake" "h-4 w-4" %}</span>
+                            </div>
+                            <div id="kpi-social-workers"
+                                 class="text-3xl lg:text-4xl font-bold text-black leading-tight">{{ total_social_workers|default:"0" }}</div>
+                            <div class="text-base font-bold text-black mt-1">{% translate "Frontline workforce assisted" %}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-3">
+                    <div class="flex items-center gap-2 text-base font-bold tracking-wider text-black mb-2">
+                        {% icon "banknote" "h-4 w-4" %}
+                        {% translate "Cash" %}
+                    </div>
+                    <div class="bg-white p-4 rounded-md border border-black/10 shadow-2xs h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="text-base text-black tracking-wider font-bold">{% translate "Cash Delivered (USD)" %}</div>
+                                <span class="w-7 h-7 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">{% icon "banknote" "h-4 w-4" %}</span>
+                            </div>
+                            <div id="kpi-cash"
+                                 class="text-3xl lg:text-4xl font-bold text-black leading-tight">${{ total_cash_disbursed|default:"0" }}</div>
+                            <div class="text-sm font-bold text-black mt-1">
+                                {% translate "Payments delivered" %}:
+                                <span id="kpi-payments"
+                                      class="font-bold text-black">{{ total_payments|default:"0" }}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-sm font-normal text-black/70 mt-1">
+                                {% icon "coins" "h-3.5 w-3.5 text-black" %}
+                                {% translate "Average transfer" %}
+                                <span id="kpi-average-transfer"
+                                      class="font-bold text-black">${{ average_transfer|default:"0" }}</span>
+                                {% translate "per transfer" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Map + sector -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-6">
+                <div class="xl:col-span-7 bg-white rounded-md border border-black/10 shadow-2xs overflow-hidden">
+                    <div class="p-4 lg:p-5 pb-2 flex flex-wrap items-start justify-between gap-3">
+                        <div class="flex items-start gap-2">
+                            <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "map-pin" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-black tracking-tight">{% translate "Where cash assistance reaches children and families" %}</h2>
+                                <p class="text-base font-normal text-black/70 mt-1">{% translate "Country-level reach for the selected year" %}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="map-metric" class="sr-only">{% translate "Map metric" %}</label>
+                            <select id="map-metric"
+                                    class="text-base border-black/20 rounded-md text-black py-2.5 pl-3 pr-8 focus:ring-unicef-blue focus:border-unicef-blue font-normal bg-white">
+                                <option value="children">{% translate "Children" %}</option>
+                                <option value="families" selected>{% translate "Families" %}</option>
+                                <option value="individuals">{% translate "Individuals" %}</option>
+                                <option value="social_workers">{% translate "Social Workers" %}</option>
+                                <option value="cash">{% translate "Cash" %}</option>
+                            </select>
+                            <button id="map-play"
+                                    type="button"
+                                    class="text-base font-bold text-black border border-black/10 rounded-md px-3 py-2.5 hover:bg-black/5">
+                                {% translate "Play years" %}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative h-[320px] sm:h-[380px] lg:h-[430px] px-3 lg:px-5">
+                        <div id="world-map-chart" class="w-full h-full"></div>
+                        <div class="absolute left-6 top-2 flex flex-col gap-1 z-20">
+                            <button id="map-zoom-home"
+                                    class="w-9 h-9 sm:w-7 sm:h-7 bg-white border border-black/10 rounded-md shadow-2xs hover:bg-white flex items-center justify-center text-black/70"
+                                    title="{% translate 'Reset view' %}"
+                                    aria-label="{% translate 'Reset view' %}">
+                                {% icon "rotate-ccw" "h-4 w-4 sm:h-3.5 sm:w-3.5" %}
+                            </button>
+                            <button id="map-zoom-in"
+                                    class="w-9 h-9 sm:w-7 sm:h-7 bg-white border border-black/10 rounded-md shadow-2xs hover:bg-white flex items-center justify-center text-black/70"
+                                    title="{% translate 'Zoom in' %}"
+                                    aria-label="{% translate 'Zoom in' %}">
+                                {% icon "plus" "h-4 w-4 sm:h-3.5 sm:w-3.5" %}
+                            </button>
+                            <button id="map-zoom-out"
+                                    class="w-9 h-9 sm:w-7 sm:h-7 bg-white border border-black/10 rounded-md shadow-2xs hover:bg-white flex items-center justify-center text-black/70"
+                                    title="{% translate 'Zoom out' %}"
+                                    aria-label="{% translate 'Zoom out' %}">
+                                {% icon "minus" "h-4 w-4 sm:h-3.5 sm:w-3.5" %}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-5 py-2.5 border-t border-black/10 text-sm font-normal text-black/70">
+                        {% translate "Darker shading means a higher value. Select a country to filter the page." %}
+                    </div>
+                    <p id="map-summary" class="sr-only" aria-live="polite"></p>
+                </div>
+                <div class="xl:col-span-5 bg-white rounded-md border border-black/10 shadow-2xs p-5 flex flex-col">
+                    <div class="flex items-start justify-between gap-3 mb-1">
+                        <div class="flex items-start gap-2">
+                            <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "layers" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-black tracking-tight">{% translate "Cash assistance by sector" %}</h2>
+                                <p class="text-sm text-black/60">{% translate "Share of delivered cash by programme sector." %} <span class="font-bold text-black">{% translate "Click a slice to filter." %}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sector-chart" class="w-full flex-1 min-h-[280px]"></div>
+                </div>
+            </div>
+            <!-- Trends + mechanism -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-6">
+                <div class="xl:col-span-7 bg-white rounded-md border border-black/10 shadow-2xs p-5 flex flex-col">
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <div class="flex items-start gap-2">
+                            <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "chart-no-axes-column" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-black tracking-tight">{% translate "Trends over time" %}</h2>
+                                <p class="text-sm text-black/60">{% translate "Children, families, individuals, social workers and cash for the selected scope." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="trends-chart" class="w-full flex-1 min-h-[300px]"></div>
+                </div>
+                <div class="xl:col-span-5 bg-white rounded-md border border-black/10 shadow-2xs p-5 flex flex-col">
+                    <div class="flex items-start justify-between gap-3 mb-1">
+                        <div class="flex items-start gap-2">
+                            <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center mt-0.5">
+                                {% icon "wallet" "h-4 w-4" %}
+                            </span>
+                            <div>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-black tracking-tight">{% translate "Delivery mechanism" %}</h2>
+                                <p class="text-sm text-black/60">{% translate "How cash reaches people: delivery mechanism share." %} <span class="font-bold text-black">{% translate "Click a slice to filter." %}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="mechanism-chart" class="w-full flex-1 min-h-[280px]"></div>
+                </div>
+            </div>
+            <!-- Trust links -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <a href="https://unicef.sharepoint.com/:w:/t/EMOPS-NYHQ-HCT/ETNzq6Frl5JPq6U0YLp7KXEBGRRp4uP23iizPHGmZfa61A?e=NlZoym"
+                   target="_blank"
+                   rel="noopener"
+                   class="bg-white p-5 rounded-md border border-black/10 shadow-2xs hover:border-unicef-blue transition-colors group">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">
+                            {% icon "shield-check" "h-4 w-4" %}
+                        </span>
+                        <h3 class="text-xl font-bold text-black group-hover:text-black">{% translate "Responsible data" %}</h3>
+                    </div>
+                    <p class="text-base font-normal text-black/70 mt-2">{% translate "Read UNICEF's data protection policy." %}</p>
+                </a>
+                <a href="https://www.unicef.org/hope-hct/resources"
+                   target="_blank"
+                   rel="noopener"
+                   class="bg-white p-5 rounded-md border border-black/10 shadow-2xs hover:border-unicef-blue transition-colors group">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 shrink-0 rounded bg-unicef-blue text-white flex items-center justify-center">
+                            {% icon "book-open" "h-4 w-4" %}
+                        </span>
+                        <h3 class="text-xl font-bold text-black group-hover:text-black">{% translate "Methodology" %}</h3>
+                    </div>
+                    <p class="text-base font-normal text-black/70 mt-2">{% translate "How HOPE data is produced and the standards applied." %}</p>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script src="{% static_js 'js/macarons.js' %}"></script>
+    <script>
+{% translate "All years" as t_all_years %}
+{% translate "All countries" as t_all_countries %}
+{% translate "No data" as t_no_data %}
+{% translate "Children" as t_children %}
+{% translate "Families" as t_families %}
+{% translate "Individuals" as t_individuals %}
+{% translate "Cash" as t_cash %}
+{% translate "High" as t_high %}
+{% translate "Low" as t_low %}
+{% translate "Reach" as t_reach %}
+{% translate "Not specified" as t_not_specified %}
+{% translate "Other" as t_other %}
+{% translate "Play years" as t_play_years %}
+{% translate "Pause" as t_pause %}
+{% translate "Data could not be loaded. Please refresh." as t_load_error %}
+{% translate "countries selected" as t_countries_selected %}
+{% translate "Sector" as t_sector %}
+{% translate "Delivery mechanism" as t_mechanism %}
+{% translate "Social Workers" as t_social_workers %}
+{% translate "Remove" as t_remove %}
+{% translate "Loading..." as t_loading %}
+{% translate "years of data available." as t_years_available %}
+{% translate "Education" as t_dim_education %}
+{% translate "Health" as t_dim_health %}
+{% translate "WASH" as t_dim_wash %}
+{% translate "Nutrition" as t_dim_nutrition %}
+{% translate "Child Protection" as t_dim_child_protection %}
+{% translate "Social Protection" as t_dim_social_protection %}
+{% translate "Multi-purpose Cash" as t_dim_mpc %}
+{% translate "Winterization" as t_dim_winterization %}
+{% translate "Mobile Money" as t_dim_mobile_money %}
+{% translate "Bank Transfer" as t_dim_bank_transfer %}
+{% translate "Cash in Hand" as t_dim_cash_in_hand %}
+{% translate "Cash on Site" as t_dim_cash_on_site %}
+{% translate "Paper Voucher" as t_dim_paper_voucher %}
+{% translate "e-Voucher" as t_dim_evoucher %}
+{% translate "Prepaid Card" as t_dim_prepaid_card %}
+document.addEventListener('DOMContentLoaded', async function () {
+    const docLang = document.documentElement.lang || 'en';
+    const countryKey = window.HopeChart?.countryKey || (value => String(value || '').toLowerCase());
+    const formatCountry = window.HopeChart?.formatCountryName || (value => value);
+    const mapFeatureByKey = new Map();
+    const compact = new Intl.NumberFormat(docLang, { notation: 'compact', maximumFractionDigits: 1 });
+    const chartFont = getComputedStyle(document.body).fontFamily;
+    const DEFAULT_MAP_ZOOM = 1.2;
+    const MIN_MAP_ZOOM = 1;
+    const MAX_MAP_ZOOM = 8;
+    const BRAND_CHART_COLORS = ['#00AEEF', '#0047BB', '#004C45', '#FFB500', '#FF7100', '#9ADBE8', '#000000', '#BDBDBD'];
+    const DIMENSION_LABELS = {
+        'education': '{{ t_dim_education|escapejs }}',
+        'health': '{{ t_dim_health|escapejs }}',
+        'wash': '{{ t_dim_wash|escapejs }}',
+        'nutrition': '{{ t_dim_nutrition|escapejs }}',
+        'child protection': '{{ t_dim_child_protection|escapejs }}',
+        'child_protection': '{{ t_dim_child_protection|escapejs }}',
+        'social protection': '{{ t_dim_social_protection|escapejs }}',
+        'social_protection': '{{ t_dim_social_protection|escapejs }}',
+        'multi-purpose cash': '{{ t_dim_mpc|escapejs }}',
+        'multipurpose cash': '{{ t_dim_mpc|escapejs }}',
+        'mpc': '{{ t_dim_mpc|escapejs }}',
+        'winterization': '{{ t_dim_winterization|escapejs }}',
+        'mobile money': '{{ t_dim_mobile_money|escapejs }}',
+        'mobile_money': '{{ t_dim_mobile_money|escapejs }}',
+        'bank transfer': '{{ t_dim_bank_transfer|escapejs }}',
+        'bank_transfer': '{{ t_dim_bank_transfer|escapejs }}',
+        'cash in hand': '{{ t_dim_cash_in_hand|escapejs }}',
+        'cash_in_hand': '{{ t_dim_cash_in_hand|escapejs }}',
+        'direct cash': '{{ t_dim_cash_in_hand|escapejs }}',
+        'cash on site': '{{ t_dim_cash_on_site|escapejs }}',
+        'cash_on_site': '{{ t_dim_cash_on_site|escapejs }}',
+        'outreach payment': '{{ t_dim_cash_on_site|escapejs }}',
+        'outreach payments': '{{ t_dim_cash_on_site|escapejs }}',
+        'paper voucher': '{{ t_dim_paper_voucher|escapejs }}',
+        'paper_voucher': '{{ t_dim_paper_voucher|escapejs }}',
+        'e-voucher': '{{ t_dim_evoucher|escapejs }}',
+        'electronic voucher': '{{ t_dim_evoucher|escapejs }}',
+        'prepaid card': '{{ t_dim_prepaid_card|escapejs }}',
+        'debit card': '{{ t_dim_prepaid_card|escapejs }}'
+    };
+    const translateDimension = value => {
+        if (!value) return '{{ t_not_specified|escapejs }}';
+        const rawKey = String(value).trim().toLowerCase();
+        const normalizedKey = rawKey.replace(/[_-]+/g, ' ');
+        return DIMENSION_LABELS[rawKey]
+            || DIMENSION_LABELS[normalizedKey]
+            || window.HopeChart?.formatLabel?.(value)
+            || String(value);
+    };
+    const normaliseMechanism = value => {
+        const key = String(value || '').trim().toUpperCase();
+        if (key === 'OUTREACH PAYMENT' || key === 'OUTREACH PAYMENTS') return 'CASH ON SITE';
+        // HOPE emits UNKNOWN when a payment has no usable delivery mechanism.
+        // It is not a real mechanism, so the mechanism chart folds it into Other
+        // instead of showing it as a separate slice or filter.
+        if (key === 'UNKNOWN' || key === '') return 'UNKNOWN';
+        return String(value || '');
+    };
+    const money = value => {
+        const v = Number(value) || 0;
+        if (Math.abs(v) >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+        if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+        if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
+        return `$${Math.round(v).toLocaleString(docLang)}`;
+    };
+    const averageMoney = value => {
+        const v = Number(value) || 0;
+        if (Math.abs(v) >= 1e6) return `$${(v / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+        if (Math.abs(v) >= 1e3) return `$${(v / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+        return `$${Math.round(v).toLocaleString(docLang)}`;
+    };
+    const count = value => compact.format(Number(value) || 0);
+    const sum = (rows, key) => rows.reduce((total, row) => total + (Number(row[key]) || 0), 0);
+    const yearOf = row => Number(String(row.date || '').slice(0, 4));
+    const monthOf = row => Number(String(row.date || '').slice(5, 7));
+    const isSector = row => row.dimension_type === 'sector';
+
+    const state = {
+        year: 'all',
+        selectedCountries: new Set(),
+        sector: null,
+        mechanism: null,
+        metric: 'families',
+        playTimer: null
+    };
+
+    const yearSelect = document.getElementById('landing-year');
+    const countryButton = document.getElementById('country-filter-button');
+    const countryValue = document.getElementById('country-filter-value');
+    const countryPanel = document.getElementById('country-filter-panel');
+    const countrySearch = document.getElementById('country-search');
+    const countryOptions = document.getElementById('country-options');
+    const countryEmpty = document.getElementById('country-empty');
+    const countryChips = document.getElementById('country-chips');
+    const resetButton = document.getElementById('landing-reset');
+    const mapMetric = document.getElementById('map-metric');
+    const mapPlay = document.getElementById('map-play');
+    const mapChart = echarts.init(document.getElementById('world-map-chart'), 'macarons');
+    const trendsChart = echarts.init(document.getElementById('trends-chart'), 'macarons');
+    const sectorChart = echarts.init(document.getElementById('sector-chart'), 'macarons');
+    const mechanismChart = echarts.init(document.getElementById('mechanism-chart'), 'macarons');
+
+    [mapChart, trendsChart, sectorChart, mechanismChart].forEach(chart => {
+        chart.showLoading({ text: '{{ t_loading|escapejs }}', color: '#00AEEF', textColor: '#000000', maskColor: 'rgba(255,255,255,0.75)' });
+    });
+
+    let finData = [];
+    let demoData = [];
+    let years = [];
+    let countries = [];
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('year')) state.year = params.get('year');
+    if (params.get('country')) {
+        params.get('country').split(',').map(value => value.trim()).filter(Boolean).forEach(value => {
+            state.selectedCountries.add(value);
+        });
+    }
+    if (params.get('sector')) state.sector = params.get('sector');
+    if (params.get('mechanism')) state.mechanism = normaliseMechanism(params.get('mechanism'));
+    if (state.sector && state.mechanism) state.mechanism = null;
+
+    function matches(row, includeCountry = true) {
+        const yearMatch = state.year === 'all' || yearOf(row) === Number(state.year);
+        const countryMatch = !includeCountry || state.selectedCountries.size === 0 || state.selectedCountries.has(row.country_slug);
+        return yearMatch && countryMatch;
+    }
+
+    function yearMatches(row) {
+        return state.year === 'all' || yearOf(row) === Number(state.year);
+    }
+
+    function financialRows(rowMatches) {
+        if (state.sector) {
+            return finData.filter(row => row.dimension_type === 'sector' && row.dimension_value === state.sector && rowMatches(row));
+        }
+        if (state.mechanism) {
+            return finData.filter(row => row.dimension_type === 'delivery_type' && normaliseMechanism(row.dimension_value) === state.mechanism && rowMatches(row));
+        }
+        return finData.filter(row => isSector(row) && rowMatches(row));
+    }
+
+    function demographicRows(rowMatches) {
+        let rows = demoData.filter(row => isSector(row) && String(row.program_type || '').toUpperCase() !== 'SOCIAL' && rowMatches(row));
+        if (state.sector) rows = rows.filter(row => row.dimension_value === state.sector);
+        return rows;
+    }
+
+    function socialWorkerRows(rowMatches) {
+        let rows = demoData.filter(row => isSector(row) && String(row.program_type || '').toUpperCase() === 'SOCIAL' && rowMatches(row));
+        if (state.sector) rows = rows.filter(row => row.dimension_value === state.sector);
+        return rows;
+    }
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+    }
+
+    function setText(id, value) {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    }
+
+    function updateUrl() {
+        const url = new URL(window.location.href);
+        if (state.year === 'all') url.searchParams.delete('year'); else url.searchParams.set('year', state.year);
+        if (state.selectedCountries.size === 0) url.searchParams.delete('country');
+        else url.searchParams.set('country', Array.from(state.selectedCountries).sort().join(','));
+        if (state.sector) url.searchParams.set('sector', state.sector);
+        else url.searchParams.delete('sector');
+        if (state.mechanism) url.searchParams.set('mechanism', state.mechanism);
+        else url.searchParams.delete('mechanism');
+        window.history.replaceState({}, '', url);
+    }
+
+    function countryLabel() {
+        const values = Array.from(state.selectedCountries);
+        if (values.length === 0) return '{{ t_all_countries|escapejs }}';
+        if (values.length === 1) return formatCountry(values[0]);
+        return `${values.length} {{ t_countries_selected|escapejs }}`;
+    }
+
+    function updateScopeSummary() {
+        const yearLabel = state.year === 'all' ? '{{ t_all_years|escapejs }}' : state.year;
+        const dimensionLabel = state.sector
+            ? `${'{{ t_sector|escapejs }}'}: ${translateDimension(state.sector)}`
+            : state.mechanism
+                ? `${'{{ t_mechanism|escapejs }}'}: ${translateDimension(state.mechanism)}`
+                : '';
+        const summary = document.getElementById('map-summary');
+        if (summary) summary.textContent = `${yearLabel} · ${countryLabel()}${dimensionLabel ? ' · ' + dimensionLabel : ''}. ${years.length} {{ t_years_available|escapejs }}`;
+    }
+
+    function dimensionChip(dimension, label, value) {
+        const displayValue = translateDimension(value);
+        return `
+            <span class="inline-flex items-center gap-1.5 bg-unicef-blue-dark border border-unicef-blue-dark text-white rounded pl-3 pr-1.5 py-1 text-xs font-bold">
+                ${escapeHtml(label)}: ${escapeHtml(displayValue)}
+                <button type="button" data-remove-dimension="${dimension}" class="w-6 h-6 sm:w-5 sm:h-5 rounded hover:bg-unicef-blue flex items-center justify-center" aria-label="{{ t_remove|escapejs }} ${escapeHtml(label)}: ${escapeHtml(displayValue)}">×</button>
+            </span>`;
+    }
+
+    function updateCountryChips() {
+        countryValue.textContent = countryLabel();
+        const values = Array.from(state.selectedCountries).sort((a, b) => formatCountry(a).localeCompare(formatCountry(b)));
+        const chips = values.map(slug => `
+            <span class="inline-flex items-center gap-1.5 bg-unicef-blue border border-unicef-blue text-white rounded pl-3 pr-1.5 py-1 text-xs font-bold">
+                ${formatCountry(slug)}
+                <button type="button" data-remove-country="${slug}" class="w-6 h-6 sm:w-5 sm:h-5 rounded hover:bg-unicef-blue-dark flex items-center justify-center" aria-label="{{ t_remove|escapejs }} ${formatCountry(slug)}">×</button>
+            </span>`);
+        if (state.sector) chips.push(dimensionChip('sector', '{{ t_sector|escapejs }}', state.sector));
+        if (state.mechanism) chips.push(dimensionChip('mechanism', '{{ t_mechanism|escapejs }}', state.mechanism));
+        countryChips.innerHTML = chips.join('');
+        countryChips.style.display = chips.length ? 'flex' : 'none';
+    }
+
+    function visibleCountryOptions() {
+        const query = (countrySearch.value || '').trim().toLowerCase();
+        if (!query) return countries;
+        return countries.filter(slug => formatCountry(slug).toLowerCase().includes(query));
+    }
+
+    function renderCountryOptions() {
+        const visible = visibleCountryOptions();
+        countryOptions.innerHTML = visible.map(slug => `
+            <label class="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-white cursor-pointer text-sm text-black font-normal">
+                <input type="checkbox" value="${slug}" ${state.selectedCountries.has(slug) ? 'checked' : ''} class="rounded border-black/20 text-black focus:ring-unicef-blue">
+                <span>${formatCountry(slug)}</span>
+            </label>`).join('');
+        countryEmpty.classList.toggle('hidden', visible.length > 0);
+    }
+
+    function toggleCountry(slug, selected) {
+        if (selected) state.selectedCountries.add(slug);
+        else state.selectedCountries.delete(slug);
+        updateCountryChips();
+        renderCountryOptions();
+        updateAll();
+    }
+
+    function populateFilters() {
+        years = Array.from(new Set([...finData, ...demoData].map(yearOf))).filter(Boolean).sort();
+        countries = Array.from(new Set([...finData, ...demoData].filter(isSector).map(row => row.country_slug).filter(Boolean)))
+            .sort((a, b) => formatCountry(a).localeCompare(formatCountry(b)));
+
+        yearSelect.innerHTML = '<option value="all">{{ t_all_years|escapejs }}</option>' +
+            years.slice().reverse().map(year => `<option value="${year}">${year}</option>`).join('');
+
+        if (state.year !== 'all' && !years.includes(Number(state.year))) state.year = 'all';
+        Array.from(state.selectedCountries).forEach(slug => {
+            if (!countries.includes(slug)) state.selectedCountries.delete(slug);
+        });
+        const sectorValues = new Set(finData.filter(row => row.dimension_type === 'sector').map(row => row.dimension_value));
+        const mechanismValues = new Set(
+            finData
+                .filter(row => row.dimension_type === 'delivery_type')
+                .map(row => normaliseMechanism(row.dimension_value))
+                .filter(value => value !== 'UNKNOWN')
+        );
+        if (state.sector && !sectorValues.has(state.sector)) state.sector = null;
+        if (state.mechanism && !mechanismValues.has(state.mechanism)) state.mechanism = null;
+        yearSelect.value = state.year;
+        const unmapped = countries.filter(slug => !mapFeatureByKey.has(countryKey(slug)));
+        if (unmapped.length > 0) console.warn('No map feature for countries:', unmapped);
+        updateCountryChips();
+        renderCountryOptions();
+    }
+
+    function updateKpis() {
+        const finRows = financialRows(matches);
+        const demoRows = demographicRows(matches);
+        const socialRows = socialWorkerRows(matches);
+
+        setText('kpi-children', count(sum(demoRows, 'total_children')));
+        setText('kpi-families', count(sum(demoRows, 'total_households')));
+        setText('kpi-individuals', count(sum(demoRows, 'total_beneficiaries')));
+        setText('kpi-social-workers', count(sum(socialRows, 'total_beneficiaries')));
+        const cash = sum(finRows, 'total_usd');
+        const payments = sum(finRows, 'payment_count');
+        setText('kpi-cash', money(cash));
+        setText('kpi-payments', count(payments));
+        setText('kpi-average-transfer', payments > 0 ? averageMoney(cash / payments) : '—');
+    }
+
+    function countryMetric(slug, metric) {
+        const finRows = financialRows(row => row.country_slug === slug && yearMatches(row));
+        const demoRows = demographicRows(row => row.country_slug === slug && yearMatches(row));
+        const socialRows = socialWorkerRows(row => row.country_slug === slug && yearMatches(row));
+        if (metric === 'cash') return sum(finRows, 'total_usd');
+        if (metric === 'families') return sum(demoRows, 'total_households');
+        if (metric === 'individuals') return sum(demoRows, 'total_beneficiaries');
+        if (metric === 'social_workers') return sum(socialRows, 'total_beneficiaries');
+        return sum(demoRows, 'total_children');
+    }
+
+    function updateMap() {
+        const data = [];
+        countries.forEach(slug => {
+            const mapName = mapFeatureByKey.get(countryKey(slug));
+            if (!mapName) return;
+            const value = countryMetric(slug, state.metric);
+            if (value > 0) data.push({ name: mapName, value, slug });
+        });
+        const maxValue = Math.max(...data.map(item => item.value), 1);
+
+        mapChart.setOption({
+            textStyle: { fontFamily: chartFont },
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(255,255,255,0.97)',
+                borderColor: '#e5e5e5',
+                borderWidth: 1,
+                textStyle: { color: '#000000', fontFamily: chartFont, fontSize: 13 },
+                formatter: params => {
+                    if (!params.data) return `${params.name}: {{ t_no_data|escapejs }}`;
+                    const d = params.data;
+                    const metrics = {
+                        children: sum(demographicRows(row => row.country_slug === d.slug && yearMatches(row)), 'total_children'),
+                        families: sum(demographicRows(row => row.country_slug === d.slug && yearMatches(row)), 'total_households'),
+                        individuals: sum(demographicRows(row => row.country_slug === d.slug && yearMatches(row)), 'total_beneficiaries'),
+                        social_workers: sum(socialWorkerRows(row => row.country_slug === d.slug && yearMatches(row)), 'total_beneficiaries'),
+                        cash: sum(financialRows(row => row.country_slug === d.slug && yearMatches(row)), 'total_usd')
+                    };
+                    return `<b>${params.name}</b><br/>` +
+                        `{{ t_children|escapejs }}: ${count(metrics.children)}<br/>` +
+                        `{{ t_families|escapejs }}: ${count(metrics.families)}<br/>` +
+                        `{{ t_individuals|escapejs }}: ${count(metrics.individuals)}<br/>` +
+                        `{{ t_social_workers|escapejs }}: ${count(metrics.social_workers)}<br/>` +
+                        `{{ t_cash|escapejs }}: ${money(metrics.cash)}`;
+                }
+            },
+            visualMap: {
+                min: 0,
+                max: maxValue,
+                left: 18,
+                bottom: 18,
+                text: ['{{ t_high|escapejs }}', '{{ t_low|escapejs }}'],
+                calculable: false,
+                inRange: { color: ['#9ADBE8', '#00AEEF', '#0047BB'] },
+                textStyle: { fontFamily: chartFont, fontSize: 12, color: '#000000' }
+            },
+            series: [{
+                name: '{{ t_reach|escapejs }}',
+                type: 'map',
+                mapType: 'world',
+                roam: true,
+                zoom: DEFAULT_MAP_ZOOM,
+                center: [16, 12],
+                scaleLimit: { min: MIN_MAP_ZOOM, max: MAX_MAP_ZOOM },
+                itemStyle: { borderColor: '#ffffff', borderWidth: 0.8, areaColor: '#eeeeee' },
+                emphasis: { itemStyle: { areaColor: '#00AEEF' }, label: { show: false } },
+                select: { disabled: true },
+                data
+            }]
+        }, { notMerge: true });
+        mapChart.hideLoading();
+    }
+
+    function updateTrends() {
+        const categories = [];
+        const cash = [];
+        const individuals = [];
+        const families = [];
+        const children = [];
+        const social_workers = [];
+
+        if (state.year === 'all') {
+            years.forEach(year => {
+                const finRows = financialRows(row => yearOf(row) === year && matches(row));
+                const demoRows = demographicRows(row => yearOf(row) === year && matches(row));
+                const socialRows = socialWorkerRows(row => yearOf(row) === year && matches(row));
+                categories.push(String(year));
+                cash.push(sum(finRows, 'total_usd'));
+                individuals.push(sum(demoRows, 'total_beneficiaries'));
+                families.push(sum(demoRows, 'total_households'));
+                children.push(sum(demoRows, 'total_children'));
+                social_workers.push(sum(socialRows, 'total_beneficiaries'));
+            });
+        } else {
+            for (let month = 1; month <= 12; month++) {
+                const finRows = financialRows(row => yearOf(row) === Number(state.year) && monthOf(row) === month && matches(row));
+                const demoRows = demographicRows(row => yearOf(row) === Number(state.year) && monthOf(row) === month && matches(row));
+                const socialRows = socialWorkerRows(row => yearOf(row) === Number(state.year) && monthOf(row) === month && matches(row));
+                categories.push(new Date(Number(state.year), month - 1, 1).toLocaleString(docLang, { month: 'short' }));
+                cash.push(sum(finRows, 'total_usd'));
+                individuals.push(sum(demoRows, 'total_beneficiaries'));
+                families.push(sum(demoRows, 'total_households'));
+                children.push(sum(demoRows, 'total_children'));
+                social_workers.push(sum(socialRows, 'total_beneficiaries'));
+            }
+        }
+
+        trendsChart.setOption({
+            textStyle: { fontFamily: chartFont },
+            tooltip: {
+                trigger: 'axis',
+                textStyle: { fontFamily: chartFont, color: '#000000' },
+                formatter: params => {
+                    let html = `<b>${params[0].axisValue}</b><br/>`;
+                    params.forEach(p => {
+                        html += `${p.marker} ${p.seriesName}: <b>${p.seriesName === '{{ t_cash|escapejs }}' ? money(p.value) : count(p.value)}</b><br/>`;
+                    });
+                    return html;
+                }
+            },
+            legend: { top: 0, right: 0, textStyle: { fontFamily: chartFont, fontSize: 12, color: '#000000' } },
+            grid: { top: 40, bottom: 30, left: 55, right: 55 },
+            xAxis: { type: 'category', data: categories, axisLabel: { fontFamily: chartFont, fontSize: 13, color: 'rgba(0,0,0,0.6)' }, axisLine: { lineStyle: { color: 'rgba(0,0,0,0.1)' } } },
+            yAxis: [
+                { type: 'value', axisLabel: { fontFamily: chartFont, fontSize: 12, color: 'rgba(0,0,0,0.6)', formatter: value => money(value) }, splitLine: { lineStyle: { color: 'rgba(0,0,0,0.08)' } } },
+                { type: 'value', axisLabel: { fontFamily: chartFont, fontSize: 12, color: 'rgba(0,0,0,0.6)', formatter: value => count(value) }, splitLine: { show: false } }
+            ],
+            series: [
+                { name: '{{ t_cash|escapejs }}', type: 'line', smooth: true, yAxisIndex: 0, data: cash, lineStyle: { color: '#00AEEF', width: 2.5 }, itemStyle: { color: '#00AEEF' } },
+                { name: '{{ t_individuals|escapejs }}', type: 'line', smooth: true, yAxisIndex: 1, data: individuals, lineStyle: { color: '#0047BB', width: 2 }, itemStyle: { color: '#0047BB' } },
+                { name: '{{ t_families|escapejs }}', type: 'line', smooth: true, yAxisIndex: 1, data: families, lineStyle: { color: '#004C45', width: 2 }, itemStyle: { color: '#004C45' } },
+                { name: '{{ t_children|escapejs }}', type: 'line', smooth: true, yAxisIndex: 1, data: children, lineStyle: { color: '#FFB500', width: 2 }, itemStyle: { color: '#FFB500' } },
+                { name: '{{ t_social_workers|escapejs }}', type: 'line', smooth: true, yAxisIndex: 1, data: social_workers, lineStyle: { color: '#FF7100', width: 2 }, itemStyle: { color: '#FF7100' } }
+            ],
+            media: [{
+                query: { maxWidth: 520 },
+                option: {
+                    legend: { top: 'auto', bottom: 0, left: 'center', right: 'auto', textStyle: { fontFamily: chartFont, fontSize: 11, color: '#000000' } },
+                    grid: { top: 20, bottom: 58, left: 45, right: 45 },
+                    xAxis: { axisLabel: { fontSize: 11 } },
+                    yAxis: [
+                        { axisLabel: { fontSize: 10 } },
+                        { axisLabel: { fontSize: 10 } }
+                    ]
+                }
+            }]
+        }, { notMerge: true });
+        trendsChart.hideLoading();
+    }
+
+    function renderComposition(chart, rows, metric, selected, normalise = value => value, mergeIntoOther = null) {
+        const grouped = {};
+        rows.forEach(row => {
+            const key = normalise(row.dimension_value) || '{{ t_not_specified|escapejs }}';
+            grouped[key] = (grouped[key] || 0) + (Number(row[metric]) || 0);
+        });
+        const entries = Object.entries(grouped).filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
+        let rest = 0;
+        const mainEntries = [];
+        entries.forEach(([name, value]) => {
+            if (mergeIntoOther && name === mergeIntoOther) rest += value;
+            else mainEntries.push([name, value]);
+        });
+        const top = mainEntries.slice(0, 7);
+        rest += mainEntries.slice(7).reduce((total, [, value]) => total + value, 0);
+        const hasOther = rest > 0;
+        if (hasOther) top.push(['{{ t_other|escapejs }}', rest]);
+        const data = top.map(([name, value], index) => {
+            const isOther = hasOther && index === top.length - 1;
+            const displayName = isOther ? name : translateDimension(name);
+            let itemStyle;
+            if (selected) {
+                itemStyle = name === selected
+                    ? { borderColor: '#0047BB', borderWidth: 3, opacity: 1 }
+                    : { opacity: 0.35 };
+            }
+            return { name: displayName, rawKey: name, value, isOther: isOther || undefined, itemStyle };
+        });
+        chart.setOption({
+            textStyle: { fontFamily: chartFont },
+            color: BRAND_CHART_COLORS,
+            tooltip: { trigger: 'item', textStyle: { fontFamily: chartFont, color: '#000000' }, formatter: params => `${params.name}: <b>${metric === 'total_usd' ? money(params.value) : count(params.value)}</b> (${params.percent}%)` },
+            legend: { bottom: 0, left: 'center', textStyle: { fontFamily: chartFont, fontSize: 13, color: '#000000' } },
+            series: [{
+                type: 'pie',
+                radius: ['42%', '68%'],
+                center: ['50%', '44%'],
+                avoidLabelOverlap: true,
+                cursor: 'pointer',
+                itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+                label: { show: true, formatter: params => `${params.name}\n${params.percent}%`, fontFamily: chartFont, fontSize: 12, color: '#000000' },
+                labelLine: { length: 8, length2: 6 },
+                data
+            }],
+            media: [{
+                query: { maxWidth: 520 },
+                option: {
+                    legend: { type: 'scroll', bottom: 0, left: 'center', right: 'auto', width: '90%', textStyle: { fontSize: 11, color: '#64748b' } },
+                    series: [{
+                        radius: ['48%', '72%'],
+                        label: { show: false },
+                        labelLine: { show: false }
+                    }]
+                }
+            }]
+        }, { notMerge: true });
+        chart.hideLoading();
+    }
+
+    function updateComposition() {
+        const finRows = finData.filter(row => matches(row));
+        renderComposition(sectorChart, finRows.filter(row => row.dimension_type === 'sector'), 'total_usd', state.sector);
+        renderComposition(
+            mechanismChart,
+            finRows.filter(row => row.dimension_type === 'delivery_type'),
+            'total_usd',
+            state.mechanism,
+            normaliseMechanism,
+            'UNKNOWN'
+        );
+    }
+
+    function updateAll() {
+        updateKpis();
+        updateMap();
+        updateTrends();
+        updateComposition();
+        updateScopeSummary();
+        updateUrl();
+    }
+
+    function closeCountryPanel() {
+        countryPanel.classList.add('hidden');
+        countryButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function openCountryPanel() {
+        countryPanel.classList.remove('hidden');
+        countryButton.setAttribute('aria-expanded', 'true');
+        renderCountryOptions();
+        countrySearch.focus();
+    }
+
+    countryButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        if (countryPanel.classList.contains('hidden')) openCountryPanel();
+        else closeCountryPanel();
+    });
+    countrySearch.addEventListener('input', renderCountryOptions);
+    document.getElementById('country-select-all').addEventListener('click', function () {
+        visibleCountryOptions().forEach(slug => state.selectedCountries.add(slug));
+        updateCountryChips();
+        renderCountryOptions();
+        updateAll();
+    });
+    document.getElementById('country-clear').addEventListener('click', function () {
+        state.selectedCountries.clear();
+        updateCountryChips();
+        renderCountryOptions();
+        updateAll();
+    });
+    countryOptions.addEventListener('change', function (event) {
+        if (!event.target.matches('input[type="checkbox"]')) return;
+        toggleCountry(event.target.value, event.target.checked);
+    });
+    countryChips.addEventListener('click', function (event) {
+        const country = event.target.closest('[data-remove-country]');
+        if (country) {
+            toggleCountry(country.dataset.removeCountry, false);
+            return;
+        }
+        const dimension = event.target.closest('[data-remove-dimension]');
+        if (!dimension) return;
+        state[dimension.dataset.removeDimension] = null;
+        updateCountryChips();
+        updateAll();
+    });
+    document.addEventListener('click', function (event) {
+        if (!countryPanel.contains(event.target) && !countryButton.contains(event.target)) closeCountryPanel();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closeCountryPanel();
+    });
+
+    yearSelect.addEventListener('change', function () {
+        state.year = this.value;
+        if (state.playTimer) {
+            clearInterval(state.playTimer);
+            state.playTimer = null;
+            mapPlay.textContent = '{{ t_play_years|escapejs }}';
+        }
+        updateAll();
+    });
+    resetButton.addEventListener('click', function () {
+        if (state.playTimer) {
+            clearInterval(state.playTimer);
+            state.playTimer = null;
+            mapPlay.textContent = '{{ t_play_years|escapejs }}';
+        }
+        state.year = 'all';
+        state.selectedCountries.clear();
+        state.sector = null;
+        state.mechanism = null;
+        yearSelect.value = 'all';
+        updateCountryChips();
+        renderCountryOptions();
+        updateAll();
+    });
+    mapMetric.addEventListener('change', function () {
+        state.metric = this.value;
+        updateMap();
+    });
+    mapPlay.addEventListener('click', function () {
+        if (state.playTimer) {
+            clearInterval(state.playTimer);
+            state.playTimer = null;
+            mapPlay.textContent = '{{ t_play_years|escapejs }}';
+            return;
+        }
+        if (!years.length) return;
+        let index = state.year === 'all' ? 0 : Math.max(0, years.indexOf(Number(state.year)));
+        state.year = String(years[index]);
+        yearSelect.value = state.year;
+        updateAll();
+        mapPlay.textContent = '{{ t_pause|escapejs }}';
+        state.playTimer = setInterval(() => {
+            index += 1;
+            if (index >= years.length) {
+                clearInterval(state.playTimer);
+                state.playTimer = null;
+                mapPlay.textContent = '{{ t_play_years|escapejs }}';
+                return;
+            }
+            state.year = String(years[index]);
+            yearSelect.value = state.year;
+            updateAll();
+        }, 1800);
+    });
+
+    const zoomHome = document.getElementById('map-zoom-home');
+    const zoomIn = document.getElementById('map-zoom-in');
+    const zoomOut = document.getElementById('map-zoom-out');
+    if (zoomHome) zoomHome.addEventListener('click', () => mapChart.setOption({ series: [{ zoom: DEFAULT_MAP_ZOOM, center: [16, 12] }] }));
+    if (zoomIn) zoomIn.addEventListener('click', () => {
+        const option = mapChart.getOption();
+        const zoom = Math.min(MAX_MAP_ZOOM, (option.series[0].zoom || DEFAULT_MAP_ZOOM) * 1.3);
+        mapChart.setOption({ series: [{ zoom, center: option.series[0].center || [16, 12] }] });
+    });
+    if (zoomOut) zoomOut.addEventListener('click', () => {
+        const option = mapChart.getOption();
+        const zoom = Math.max(MIN_MAP_ZOOM, (option.series[0].zoom || DEFAULT_MAP_ZOOM) / 1.3);
+        mapChart.setOption({ series: [{ zoom, center: option.series[0].center || [16, 12] }] });
+    });
+
+    try {
+        const [worldResponse, finResponse, demoResponse] = await Promise.all([
+            fetch("{% static 'data/world.json' %}"),
+            fetch("{% url 'analysis_api:daily-aggregates-list' %}?dashboard=financial"),
+            fetch("{% url 'analysis_api:daily-aggregates-list' %}?dashboard=demographic&time_grain=monthly")
+        ]);
+        const worldJson = await worldResponse.json();
+        finData = await finResponse.json();
+        demoData = await demoResponse.json();
+        echarts.registerMap('world', worldJson);
+        worldJson.features.forEach(feature => {
+            const name = feature.properties && feature.properties.name;
+            if (name) mapFeatureByKey.set(countryKey(name), name);
+        });
+
+        const allFin = finData.filter(isSector);
+        setText('glance-cash', money(sum(allFin, 'total_usd')));
+        populateFilters();
+        updateAll();
+
+        mapChart.on('click', params => {
+            if (!params.data || !params.data.slug) return;
+            const slug = params.data.slug;
+            toggleCountry(slug, !state.selectedCountries.has(slug));
+        });
+
+        sectorChart.on('click', params => {
+            if (!params.data || params.data.isOther) return;
+            const rawKey = params.data.rawKey || params.data.name;
+            state.sector = state.sector === rawKey ? null : rawKey;
+            if (state.sector) state.mechanism = null;
+            updateCountryChips();
+            updateAll();
+        });
+
+        mechanismChart.on('click', params => {
+            if (!params.data || params.data.isOther) return;
+            const rawKey = params.data.rawKey || params.data.name;
+            state.mechanism = state.mechanism === rawKey ? null : rawKey;
+            if (state.mechanism) state.sector = null;
+            updateCountryChips();
+            updateAll();
+        });
+    } catch (error) {
+        console.error('Landing data failed:', error);
+        [mapChart, trendsChart, sectorChart, mechanismChart].forEach(chart => chart.hideLoading());
+        setText('map-summary', '{{ t_load_error|escapejs }}');
+    }
+
+    window.addEventListener('resize', function () {
+        mapChart.resize();
+        trendsChart.resize();
+        sectorChart.resize();
+        mechanismChart.resize();
+    });
+});
+    </script>
+{% endblock extra_js %}

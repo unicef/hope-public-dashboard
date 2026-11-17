@@ -1,0 +1,50 @@
+name: Trigger pipeline in Azure Pipelines
+
+on:
+  workflow_call:
+    inputs:
+      azure-organization:
+        required: true
+        type: string
+      azure-project:
+        required: true
+        type: string
+      azure-pipeline-id:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+    secrets:
+      azure-pat:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Trigger deploy
+        env:
+          AZURE_PAT: ${{ secrets.azure-pat }}
+          AZURE_ORGANIZATION: ${{ inputs.azure-organization }}
+          AZURE_PROJECT: ${{ inputs.azure-project }}
+          AZURE_PIPELINE_IDS: ${{ inputs.azure-pipeline-id }}
+          IMAGE_TAG: ${{ inputs.image-tag }}
+          SHA: ${{ github.sha }}
+        run: |
+          json_body=$(printf '{"variables":{"sha":{"isSecret":false,"value":"%s"},"tag":{"isSecret":false,"value":"%s"}}}' "$SHA" "$IMAGE_TAG")
+          content_length=$(printf '%s' "$json_body" | wc -c)
+
+          IFS=',' read -ra pipelines <<< "$AZURE_PIPELINE_IDS"
+          for pipeline in "${pipelines[@]}"; do
+            echo "Triggering deploy for pipeline ${pipeline}"
+            curl -fsS -L \
+              -u ":${AZURE_PAT}" \
+              -H "Content-Type: application/json" \
+              -H "Content-Length: ${content_length}" \
+              -d "$json_body" \
+              "https://dev.azure.com/${AZURE_ORGANIZATION}/${AZURE_PROJECT}/_apis/pipelines/${pipeline}/runs?api-version=7.1-preview.1"
+          done

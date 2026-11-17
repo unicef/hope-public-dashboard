@@ -1,6 +1,7 @@
 *
 docker/*.*                              @unicef/hope-arch
 
-src/hope_live/migrations/*.py           @saxix @unicef/hope-arch
+src/hope_dashboard/migrations/*.py      @saxix @unicef/hope-arch
+src/hope_dashboard/analysis/migrations/*.py @saxix @unicef/hope-arch
 pyproject.toml                          @saxix @unicef/hope-arch
 uv.lock                                 @saxix @unicef/hope-arch
