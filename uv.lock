@@ -1277,7 +1277,7 @@ wheels = [
 ]
 
 [[package]]
-name = "hope-dashboard"
+name = "hope-public-dashboard"
 source = { editable = "." }
 dependencies = [
     { name = "celery" },

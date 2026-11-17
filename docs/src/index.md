@@ -2,4 +2,4 @@
 title: Documentation
 ---
 
-Welcome to HOPE Dashboard.
+Welcome to HOPE Public Dashboard.

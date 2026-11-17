@@ -2,12 +2,12 @@ copyright: Copyright &copy; 2026 HOPE Team.
 dev_addr: 127.0.0.1:8001
 docs_dir: docs/src
 edit_uri: 'blob/develop/docs/'
-repo_url: https://github.com/unicef/hope-dashboard
+repo_url: https://github.com/unicef/hope-public-dashboard
 site_author: HOPE Team
 site_description: ""
 site_dir: ./~build/docs
-site_name: HOPE Dashboard
-site_url: https://unicef.github.io/hope-dashboard/
+site_name: HOPE Public Dashboard
+site_url: https://unicef.github.io/hope-public-dashboard/
 strict: false
 exclude_docs: |
   _docs/*
