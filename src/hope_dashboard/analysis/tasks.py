@@ -111,6 +111,17 @@ def _invalidate_aggregates_cache() -> None:
         cache.clear()
 
 
+def _get_report_token(job: SyncDailyAggregatesJob | None = None) -> str:
+    token = config.HOPE_COUNTRY_REPORT_API_TOKEN
+    if not token:
+        message = "HOPE_COUNTRY_REPORT_API_TOKEN is not configured."
+        if job:
+            job.error_message = message
+            job.save(update_fields=["error_message"])
+        raise ValueError(message)
+    return token
+
+
 @shared_task(name="hope_dashboard.analysis.tasks.sync_daily_aggregates", bind=True)  # type: ignore[untyped-decorator]
 def sync_daily_aggregates(
     self: Any, pk: int | None = None, version: int | None = None, target_years: list[int] | None = None
@@ -123,9 +134,10 @@ def sync_daily_aggregates(
         job.error_message = ""
         job.save(update_fields=["error_message"])
 
+    token = _get_report_token(job)
+
     try:
         api_url = config.HOPE_COUNTRY_REPORT_API_URL
-        token = config.HOPE_COUNTRY_REPORT_API_TOKEN
         headers = {"Authorization": f"Token {token}"}
 
         configs = [

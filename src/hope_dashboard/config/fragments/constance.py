@@ -21,8 +21,8 @@ CONSTANCE_CONFIG: dict[str, tuple[Any, str, Any]] = {
         str,
     ),
     "HOPE_COUNTRY_REPORT_API_TOKEN": (
-        "8ac98d372760c5db87b73e1c283dcb1bc8c4f0e6",
-        "Country Report API Token",
+        "",
+        "Country Report API Token (required)",
         "token",
     ),
     "HOPE_FINANCIAL_REPORT_QUERY_ID": (

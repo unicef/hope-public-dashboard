@@ -78,18 +78,24 @@ def test_landing_page_renders_all_charts(browser):
         const hero = document.getElementById('landing-hero').getBoundingClientRect();
         const glance = document.getElementById('landing-glance').getBoundingClientRect();
         const kpis = getComputedStyle(document.getElementById('landing-kpis')).gridTemplateColumns;
+        const cards = ['kpi-children', 'kpi-families', 'kpi-individuals', 'kpi-social-workers', 'kpi-cash']
+            .map(id => document.getElementById(id).closest('.bg-white').getBoundingClientRect());
         return {
             heroRight: hero.right,
             glanceLeft: glance.left,
             heroTop: hero.top,
             glanceTop: glance.top,
-            kpiColumns: kpis.split(' ').length
+            kpiColumns: kpis.split(' ').length,
+            kpiWidths: cards.map(card => card.width),
+            kpiHeights: cards.map(card => card.height)
         };
         """
     )
     assert layout["heroRight"] <= layout["glanceLeft"] + 1
     assert abs(layout["heroTop"] - layout["glanceTop"]) < 5
-    assert layout["kpiColumns"] >= 12
+    assert layout["kpiColumns"] == 5
+    assert max(layout["kpiWidths"]) - min(layout["kpiWidths"]) <= 4
+    assert max(layout["kpiHeights"]) - min(layout["kpiHeights"]) <= 4
 
     assert "Noto Sans" in browser.execute_script("return getComputedStyle(document.body).fontFamily")
 

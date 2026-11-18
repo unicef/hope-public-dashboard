@@ -56,6 +56,14 @@ def test_public_landing_page_is_open(client):
     assert "Cash-based Assistance" in content
     assert "/login/" not in content
     assert "Sign In" not in content
+    assert "Children Reached" in content
+    assert "Cash Delivered (USD)" in content
+    assert "Payments delivered" in content
+    assert "Average transfer" in content
+    assert "Play years" in content
+    assert "Data protection" in content
+    assert "Methodology" in content
+    assert content.count("logo-white-trimmed.png") == 1
     assert response.context["total_cash_disbursed"] == "1K"
     assert response.context["total_payments"] == "10"
     assert response.context["total_individuals_reached"] == "100"
@@ -181,6 +189,7 @@ def test_constance_defaults_match_report_environment():
     from constance import config
 
     assert config.HOPE_COUNTRY_REPORT_API_URL == "https://reporting-hope-trn.unitst.org/api/offices/global/"
+    assert config.HOPE_COUNTRY_REPORT_API_TOKEN == ""
     assert config.HOPE_FINANCIAL_REPORT_QUERY_ID == 101
     assert config.HOPE_DEMOGRAPHIC_REPORT_QUERY_ID == 132
 
