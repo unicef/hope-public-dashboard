@@ -116,3 +116,9 @@ DEFAULTS = {
 }
 
 env = SmartEnv(**DEFAULTS)
+
+# Load the Celery app on Django startup so admin queue actions use the
+# configured broker, result backend and queue.
+from .celery import app as celery_app  # noqa: E402
+
+__all__ = ("celery_app", "env")

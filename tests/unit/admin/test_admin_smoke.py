@@ -23,6 +23,11 @@ class RegexList(_RegexList):
 GLOBAL_EXCLUDED_MODELS = RegexList(
     [
         r"reversion.",
+        r"django_celery_beat.ClockedSchedule",
+        r"django_celery_beat.CrontabSchedule",
+        r"django_celery_beat.IntervalSchedule",
+        r"django_celery_beat.PeriodicTask",
+        r"django_celery_beat.SolarSchedule",
         # r"security.",
         # r"core.FormSet",
         # r"core.FlexFormField",
@@ -125,6 +130,11 @@ def test_index(app):
     assert res.status_code == 200
 
 
+def test_admin_renders_django_messages(settings):
+    context_processors = settings.TEMPLATES[0]["OPTIONS"]["context_processors"]
+    assert "django.contrib.messages.context_processors.messages" in context_processors
+
+
 @pytest.mark.django_db
 def test_applist(app):
     url = reverse("admin:index")
@@ -189,6 +199,23 @@ def test_delete(app, modeladmin, record, monkeypatch):
         assert res.status_code in [200, 302]
     else:
         pytest.skip("No 'delete' permission")
+
+
+@pytest.mark.django_db
+def test_queue_action_shows_success_message(app, monkeypatch):
+    from testutils.factories import SyncDailyAggregatesJobFactory
+
+    from hope_dashboard.analysis.models import SyncDailyAggregatesJob
+
+    job = SyncDailyAggregatesJobFactory()
+    monkeypatch.setattr(SyncDailyAggregatesJob, "is_queued", lambda self: False)
+    monkeypatch.setattr(SyncDailyAggregatesJob, "queue", lambda self, use_version=True: "fake-task-id")
+
+    url = reverse("admin:analysis_syncdailyaggregatesjob_celery_queue", args=[job.pk])
+    res = app.get(url)
+    res = res.forms[1].submit().follow()
+
+    assert "Queued" in res.text
 
 
 @pytest.mark.django_db

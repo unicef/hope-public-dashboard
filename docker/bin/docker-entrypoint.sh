@@ -44,7 +44,7 @@ case "$1" in
         ;;
     "beat")
         exec gosu hope:unicef celery -A hope_dashboard.config.celery beat \
-            --schedule=/var/run/celery/celerybeat-schedule \
+            --scheduler django_celery_beat.schedulers:DatabaseScheduler \
             -l "${CELERY_LOGLEVEL:-INFO}"
         ;;
     *)

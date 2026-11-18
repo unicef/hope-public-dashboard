@@ -125,6 +125,11 @@ class Command(BaseCommand):
                 call_command("migrate", **extra)
                 call_command("create_extra_permissions")
 
+                echo("Ensure default periodic task")
+                from hope_dashboard.utils.celery_beat import ensure_default_periodic_task  # noqa: PLC0415
+
+                ensure_default_periodic_task()
+
             echo("Remove stale contenttypes")
             call_command("remove_stale_contenttypes", **extra)
 

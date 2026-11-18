@@ -243,13 +243,17 @@ def test_admin_requires_login_and_exposes_data_configuration(client):
     content = response.content.decode()
     assert "HOPE Public Dashboard" in content
     assert "Constance" in content
+    assert "Periodic Tasks" in content
     assert "Sync Daily Aggregates Jobs" in content
-    assert "Financial aggregates" not in content
-    assert "Demographic aggregates" not in content
+    assert "Financial aggregates" in content
+    assert "Demographic aggregates" in content
 
     response = client.get(reverse("admin:constance_config_changelist"))
     assert response.status_code == 200
     assert "HOPE_COUNTRY_REPORT_API_URL" in response.content.decode()
+
+    response = client.get(reverse("admin:django_celery_beat_periodictask_changelist"))
+    assert response.status_code == 200
 
     response = client.get(reverse("admin:analysis_syncdailyaggregatesjob_changelist"))
     assert response.status_code == 200
