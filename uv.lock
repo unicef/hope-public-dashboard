@@ -979,18 +979,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-unfold"
-version = "0.110.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/a6/d5f7f3bcb0c9da5719dbf32d13a5d4877994975dffae4aeaa2bd7b2d823c/django_unfold-0.110.1.tar.gz", hash = "sha256:8274da7e3c92583c7f875b3ac3ceef0ed75346a1a28b03bede667aba3205e286", size = 1172856, upload-time = "2026-11-01T08:39:32.508Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/11/66c648c4252ccebbda446b516dcab5fa02328df231b1f5006954ed1af430/django_unfold-0.110.1-py3-none-any.whl", hash = "sha256:92b1bb09e56fcbc8535cef53d19579bd417483fdb8981ceac00de409e8cc5a98", size = 1302025, upload-time = "2026-11-01T08:39:31.147Z" },
-]
-
-[[package]]
 name = "django-webtest"
 version = "1.9.15"
 source = { registry = "https://pypi.org/simple" }
@@ -1300,7 +1288,6 @@ dependencies = [
     { name = "django-streaming" },
     { name = "django-stubs", extra = ["compatible-mypy"] },
     { name = "django-tailwind" },
-    { name = "django-unfold" },
     { name = "djangorestframework" },
     { name = "drf-extensions" },
     { name = "drf-spectacular" },
@@ -1398,7 +1385,6 @@ requires-dist = [
     { name = "django-streaming" },
     { name = "django-stubs", extras = ["compatible-mypy"] },
     { name = "django-tailwind", specifier = ">=4.2" },
-    { name = "django-unfold" },
     { name = "djangorestframework" },
     { name = "drf-extensions" },
     { name = "drf-spectacular" },

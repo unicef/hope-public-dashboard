@@ -26,7 +26,6 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",
     "unicef_security.pipeline.user_details",
-    "hope_dashboard.modules.social.pipeline.save_to_group",
 )
 SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_USER_FIELDS = [
     "email",
@@ -41,3 +40,7 @@ SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SCOPE = [
 
 SOCIAL_AUTH_SANITIZE_REDIRECTS = True
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = env.bool("SOCIAL_AUTH_REDIRECT_IS_HTTPS", default=False)
+SOCIAL_AUTH_REQUIRE_POST = env.bool("SOCIAL_AUTH_REQUIRE_POST", default=True)
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+SOCIAL_LOGIN_URL = "/social/azuread-tenant-oauth2"
+USER_FIELDS = ["username", "email", "first_name", "last_name"]

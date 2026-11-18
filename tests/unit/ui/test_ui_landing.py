@@ -177,6 +177,14 @@ def test_constance_contains_data_fetch_settings():
         assert hasattr(config, key), key
 
 
+def test_constance_defaults_match_report_environment():
+    from constance import config
+
+    assert config.HOPE_COUNTRY_REPORT_API_URL == "https://reporting-hope-trn.unitst.org/api/offices/global/"
+    assert config.HOPE_FINANCIAL_REPORT_QUERY_ID == 101
+    assert config.HOPE_DEMOGRAPHIC_REPORT_QUERY_ID == 132
+
+
 def test_celery_aggregate_tasks_are_registered():
     from hope_dashboard.analysis.models import SyncDailyAggregatesJob
     from hope_dashboard.config.celery import app
@@ -219,21 +227,29 @@ def test_save_aggregates_persists_synced_rows():
 
 
 def test_admin_requires_login_and_exposes_data_configuration(client):
-    response = client.get("/admin/")
+    assert client.get("/admin/").status_code == 404
+
+    response = client.get(reverse("admin:index"))
     assert response.status_code == 302
-    assert "/admin/login/" in response["Location"]
+    assert reverse("admin:login") in response["Location"]
 
     from testutils.factories import SuperUserFactory
 
     admin_user = SuperUserFactory(username="admin-landing")
     client.force_login(admin_user)
 
-    response = client.get("/admin/")
+    response = client.get(reverse("admin:index"))
     assert response.status_code == 200
+    content = response.content.decode()
+    assert "HOPE Public Dashboard" in content
+    assert "Constance" in content
+    assert "Sync Daily Aggregates Jobs" in content
+    assert "Financial aggregates" not in content
+    assert "Demographic aggregates" not in content
 
-    response = client.get("/admin/constance/config/")
+    response = client.get(reverse("admin:constance_config_changelist"))
     assert response.status_code == 200
     assert "HOPE_COUNTRY_REPORT_API_URL" in response.content.decode()
 
-    response = client.get("/admin/analysis/syncdailyaggregatesjob/")
+    response = client.get(reverse("admin:analysis_syncdailyaggregatesjob_changelist"))
     assert response.status_code == 200

@@ -9,7 +9,7 @@ x-env: &env
     - CSRF_TRUSTED_ORIGINS=http://localhost:8000
     - DATABASE_URL=postgres://postgres:password@db:5432/hope_dashboard
     - DEBUG=1
-    - DJANGO_ADMIN_URL=admin/
+    - DJANGO_ADMIN_URL=some-unicorn
     - DJANGO_SETTINGS_MODULE=hope_dashboard.config.settings
     - FERNET_KEY=123
     - LOGGING_LEVEL=DEBUG

@@ -1,13 +1,9 @@
 from typing import Any
 
-from constance import config
 from django.conf import settings
-from django.contrib.auth.models import Group
-from django.core.management import BaseCommand, call_command
 from django.contrib.sites.models import Site
+from django.core.management import BaseCommand, call_command
 from flags.models import FlagState
-
-DEFAULT_GROUP_NAME = "Default"
 
 
 class Command(BaseCommand):
@@ -25,10 +21,6 @@ class Command(BaseCommand):
         self.stdout.write("Configuring site settings")
         Site.objects.update_or_create(pk=settings.SITE_ID, defaults={"domain": "localhost:8000", "name": "localhost"})
         Site.objects.clear_cache()
-
-        self.stdout.write("Creating default group")
-        Group.objects.get_or_create(name=DEFAULT_GROUP_NAME)
-        config.NEW_USER_DEFAULT_GROUP = DEFAULT_GROUP_NAME
 
         self.stdout.write("Setting up flags")
         flag_states = [

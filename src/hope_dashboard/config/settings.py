@@ -17,16 +17,7 @@ INSTALLED_APPS = [
     "hope_dashboard.ui",
     "hope_dashboard.modules.security",
     "unicef_security",
-    "unfold",  # before django.contrib.admin
-    "unfold.contrib.filters",  # optional, if special filters are needed
-    "unfold.contrib.forms",  # optional, if special form elements are needed
-    "unfold.contrib.inlines",  # optional, if special inlines are needed
-    "unfold.contrib.import_export",  # optional, if django-import-export package is used
-    "unfold.contrib.guardian",  # optional, if django-guardian package is used
-    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
-    "unfold.contrib.location_field",  # optional, if django-location-field package is used
-    "unfold.contrib.constance",  # optional, if django-constance package is used
-    "django.contrib.admin",
+    "hope_dashboard.config.admin_apps.HopeAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -110,7 +101,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
+    "unicef_security.middleware.UNICEFSocialAuthExceptionMiddleware",
     *env("EXTRA_MIDDLEWARES"),
 ]
 SECRET_KEY = env("SECRET_KEY")
@@ -118,6 +109,7 @@ SECRET_KEY = env("SECRET_KEY")
 AUTH_USER_MODEL = "hope_dashboard.user"
 
 AUTHENTICATION_BACKENDS = (
+    *env("AUTHENTICATION_BACKENDS"),
     "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
     "django.contrib.auth.backends.ModelBackend",
     *env("EXTRA_AUTHENTICATION_BACKENDS"),
@@ -335,7 +327,7 @@ LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "login"
 
 # Location of root django.contrib.admin URL
-ADMIN_URL = r"^admin/"
+DJANGO_ADMIN_URL = (env("DJANGO_ADMIN_URL").strip("/") or "some-unicorn") + "/"
 
 GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
 GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")

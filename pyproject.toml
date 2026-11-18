@@ -43,7 +43,6 @@ dependencies = [
   "django-streaming",
   "django-stubs[compatible-mypy]",
   "django-tailwind>=4.2",
-  "django-unfold",
   "djangorestframework",
   "drf-extensions",
   "drf-spectacular",

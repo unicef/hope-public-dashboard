@@ -1,37 +1,14 @@
 {% extends "layout.html" %}
-{% load i18n static %}
+{% load i18n %}
 {% block menu %}
 {% endblock menu %}
 {% block page %}
-    {% if config.LOGIN_LOCAL %}
-        <form method="post" id="login-form">
-            <div class="flex flex-col justify-center items-center">
-                {% csrf_token %}
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                    <legend class="fieldset-legend">{% trans "Login" %}</legend>
-                    <label class="label">{{ form.username.label }}</label>
-                    <input type="text"
-                           class="input"
-                           placeholder="{% trans "email address" %}"
-                           name="{{ form.username.name }}" />
-                    <label class="label">{% trans "Password" %}</label>
-                    <input type="password"
-                           class="input"
-                           placeholder="{% trans "your password" %}"
-                           name="{{ form.password.name }}" />
-                    <div class="m-auto">
-                        <input type="submit" class="btn btn-primary m-auto" value="{% trans "Login" %}" />
-                    </div>
-                </fieldset>
-            </div>
+    <div class="flex min-h-[60vh] flex-col items-center justify-center px-4">
+        <h1 class="text-3xl font-bold">{% translate "HOPE Public Dashboard" %}</h1>
+        <form action="{% url 'social:begin' 'azuread-tenant-oauth2' %}" method="post" class="mt-8">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">{% translate "Login with Azure" %}</button>
         </form>
-    {% endif %}
-    {% if config.LOGIN_SSO %}
-        <div class="flex flex-col justify-center items-center my-10">
-            <div class="m-auto">
-                <a class="btn btn-primary"
-                   href="{% url "social:begin" "azuread-tenant-oauth2" %}">{% trans "Login with Azure" %}</a>
-            </div>
-        </div>
-    {% endif %}
+        <p class="mt-4 text-sm text-base-content/60">{% translate "Use your UNICEF account to continue." %}</p>
+    </div>
 {% endblock page %}

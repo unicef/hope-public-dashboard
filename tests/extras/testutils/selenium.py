@@ -1,3 +1,4 @@
+from django.urls import reverse
 from seleniumbase import BaseCase
 
 
@@ -33,18 +34,18 @@ class SeleniumTC(BaseCase):
     def login_as_user(self, user=None):
         if user is not None:
             self.admin_user = user
-        self.open("/login/")
+        self.open(reverse("admin:login"))
         self.type("input[name=username]", f"{self.admin_user.username}")
         self.type("input[name=password]", f"{self.admin_user._password}")
-        self.submit('input[value="Login"]')
+        self.submit('#login-form input[type="submit"]')
         self.wait_for_ready_state_complete()
 
     def login(self, url=None):
-        self.open("/admin/")
-        if self.get_current_url() == f"{self.live_server_url}/admin/login/?next=/admin/":
+        self.open(reverse("admin:index"))
+        if reverse("admin:login") in self.get_current_url():
             self.type("input[name=username]", f"{self.admin_user.username}")
             self.type("input[name=password]", f"{self.admin_user._password}")
-            self.submit('input[value="Log in"]')
+            self.submit('#login-form input[type="submit"]')
             self.wait_for_ready_state_complete()
 
     def is_required(self, element: str) -> bool:

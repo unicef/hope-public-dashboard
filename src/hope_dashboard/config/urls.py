@@ -19,7 +19,7 @@ urlpatterns = [
     path("api/analysis/", include("hope_dashboard.analysis.api.urls")),
     path("api/", include("hope_dashboard.api.urls"), name="api"),
     path("favicon.ico", serve, kwargs={"document_root": settings.STATIC_ROOT, "path": "favicon.ico"}),
-    path("admin/", site.urls),
+    path(settings.DJANGO_ADMIN_URL, site.urls),
     path("social/", include("social_django.urls", namespace="social")),
     path("security/", include(("unicef_security.urls", "unicef_security"))),
     # unicef-security's own templates use the legacy ``security`` namespace.

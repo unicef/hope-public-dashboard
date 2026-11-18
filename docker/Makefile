@@ -48,7 +48,7 @@ build: ## build docker image
 			-e CSRF_TRUSTED_ORIGINS=http://localhost \
 			-e DATABASE_URL="postgres://postgres:@host.docker.internal:5432/hope_dashboard" \
 			-e DEBUG="1" \
-			-e DJANGO_ADMIN_URL=admin/ \
+			-e DJANGO_ADMIN_URL=some-unicorn \
 			-e DJANGO_SETTINGS_MODULE=hope_dashboard.config.settings \
 			-e FERNET_KEY=123 \
 			-e LOGGING_LEVEL="DEBUG" \

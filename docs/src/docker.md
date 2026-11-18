@@ -24,8 +24,9 @@ After cloning the repo, make sure Redis and PostgreSQL are running.
 
 The stack starts the web app, Celery worker, Celery beat, PostgreSQL, and Redis.
 
-Navigate to <http://localhost:8000/admin/> and log in using
-`admin@example.com` / `password`.
+Navigate to <http://localhost:8000/some-unicorn/> and log in using
+`admin@example.com` / `password`. The path is controlled by
+`DJANGO_ADMIN_URL`.
 
 The published image is available at:
 

@@ -1,9 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, Any, Mapping, Sequence
-from django.forms import ChoiceField
+from typing import TYPE_CHECKING, Any, Mapping
 
 from constance import config
-from django.contrib.auth.models import Group
 from django.forms import TextInput, Textarea, Widget
 
 
@@ -12,19 +10,10 @@ if TYPE_CHECKING:
     from django.core.files.uploadedfile import UploadedFile
 
     _DataT = Mapping[str, Any]  # noqa: PYI047
-    _FilesT = MultiValueDict[str, UploadedFile]  # noqa: PYI047
+    _FilesT = MultiValueDict[str, UploadedFile[Any]]  # noqa: PYI047
 
 
 logger = logging.getLogger(__name__)
-
-
-class GroupSelect(ChoiceField):
-    def __init__(self, **kwargs: Any) -> None:
-        ret: Sequence[tuple[str | int, str]] = [("", "None")] + [
-            (c["pk"], c["name"]) for c in Group.objects.values("pk", "name")
-        ]
-        kwargs["choices"] = ret
-        super().__init__(**kwargs)
 
 
 class WriteOnlyWidget(Widget):
