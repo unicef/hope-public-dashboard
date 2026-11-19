@@ -74,26 +74,26 @@
             </div>
         </section>
         <!-- Filter bar -->
-        <div class="static lg:sticky lg:top-0 z-30 bg-white border-b border-black/10">
-            <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-3">
-                <div class="rounded-lg border border-black/10 bg-white p-3 shadow-sm flex flex-wrap items-end gap-3">
+        <div class="static lg:sticky lg:top-0 z-30 bg-neutral-100 border-b border-black/10">
+            <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-4">
+                <div class="flex flex-wrap items-end gap-3">
                     <div class="w-full sm:w-auto">
                         <label for="landing-year"
-                               class="block text-base font-bold tracking-wider text-black mb-1">{% translate "Year" %}</label>
+                               class="block text-sm font-bold tracking-wide text-black mb-1.5">{% translate "Year" %}</label>
                         <select id="landing-year"
-                                class="h-11 w-full sm:w-auto rounded-md border border-black/20 bg-white pl-3 pr-8 text-base font-bold text-black shadow-sm focus:border-unicef-blue focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
+                                class="h-11 w-full sm:w-auto rounded-md border border-black/20 bg-white pl-3 pr-8 text-sm font-bold text-black focus:border-unicef-blue focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
                             <option value="all">{% translate "All years" %}</option>
                         </select>
                     </div>
                     <div class="relative w-full sm:w-auto">
                         <label id="country-filter-label"
-                               class="block text-base font-bold tracking-wider text-black mb-1">{% translate "Country" %}</label>
+                               class="block text-sm font-bold tracking-wide text-black mb-1.5">{% translate "Country" %}</label>
                         <button id="country-filter-button"
                                 type="button"
                                 aria-haspopup="listbox"
                                 aria-expanded="false"
                                 aria-controls="country-filter-panel"
-                                class="h-11 w-full sm:w-auto sm:min-w-[210px] flex items-center justify-between gap-3 rounded-md border border-black/20 bg-white px-3 text-base font-bold text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
+                                class="h-11 w-full sm:w-auto sm:min-w-[210px] flex items-center justify-between gap-3 rounded-md border border-black/20 bg-white px-3 text-sm font-bold text-black focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
                             <span id="country-filter-value">{% translate "All countries" %}</span>
                             {% icon "chevron-down" "h-4 w-4 text-black/60" %}
                         </button>
@@ -129,21 +129,21 @@
                     </div>
                     <button id="landing-reset"
                             type="button"
-                            class="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md border border-black/20 bg-white px-3 text-base font-bold text-black shadow-sm hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
+                            class="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md border border-black/20 bg-white px-3 text-sm font-bold text-black hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
                         {% icon "rotate-ccw" "h-4 w-4" %}
                         {% translate "Reset" %}
                     </button>
                     <button id="map-play"
                             type="button"
                             aria-pressed="false"
-                            class="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-black/20 bg-white px-3 text-base font-bold text-black shadow-sm hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
+                            class="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-black/20 bg-white px-3 text-sm font-bold text-black hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-unicef-blue/30">
                         {% translate "Play years" %}
                     </button>
                     <div class="ml-auto self-center text-sm sm:text-base font-bold text-black" id="latest-data-date">
                         {% translate "Data as of" %} {{ latest_data_exact|default:latest_data_str }}
                     </div>
                 </div>
-                <div id="country-chips" class="mt-2 w-full flex flex-wrap gap-2"></div>
+                <div id="country-chips" class="mt-3 w-full flex flex-wrap gap-2"></div>
             </div>
         </div>
         <div class="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">

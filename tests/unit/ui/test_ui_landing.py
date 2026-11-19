@@ -68,7 +68,7 @@ def test_public_landing_page_is_open(client):
     assert "Data protection" in content
     assert "Methodology" in content
     assert "https://www.unicef.org/documents/policy-personal-data-protection" in content
-    assert content.count("logo-white-trimmed.png") == 1
+    assert content.count("unicef-logo-white-en.png") == 1
     assert response.context["total_cash_disbursed"] == "1K"
     assert response.context["total_payments"] == "10"
     assert response.context["total_individuals_reached"] == "100"
@@ -84,16 +84,16 @@ def test_landing_includes_public_charts_data_endpoint(client):
 
 
 @pytest.mark.parametrize(
-    ("language", "expected"),
+    ("language", "expected", "logo"),
     [
-        ("es", "Explorar la evidencia"),
-        ("fr", "Explorer les données"),
-        ("ar", "استكشاف الأدلة"),
-        ("ru", "Изучить данные"),
-        ("zh-hans", "探索数据"),
+        ("es", "Explorar la evidencia", "unicef-logo-white-es.png"),
+        ("fr", "Explorer les données", "unicef-logo-white-fr.png"),
+        ("ar", "استكشاف الأدلة", "unicef-logo-white-ar.png"),
+        ("ru", "Изучить данные", "unicef-logo-white-ru.png"),
+        ("zh-hans", "探索数据", "unicef-logo-white-zh.png"),
     ],
 )
-def test_language_switch_renders_landing_translations(client, language, expected):
+def test_language_switch_renders_landing_translations(client, language, expected, logo):
     response = client.post(reverse("set_language"), {"language": language, "next": "/"})
     assert response.status_code == 302
 
@@ -102,6 +102,7 @@ def test_language_switch_renders_landing_translations(client, language, expected
 
     assert response.status_code == 200
     assert expected in content
+    assert logo in content
     assert f'lang="{language}"' in content
     if language == "ar":
         assert 'dir="rtl"' in content
@@ -194,7 +195,12 @@ def test_public_assets_are_available():
         "js/public_theme.js",
         "data/world.json",
         "images/background.png",
-        "images/logo-white-trimmed.png",
+        "images/unicef-logo-white-en.png",
+        "images/unicef-logo-white-fr.png",
+        "images/unicef-logo-white-es.png",
+        "images/unicef-logo-white-ar.png",
+        "images/unicef-logo-white-ru.png",
+        "images/unicef-logo-white-zh.png",
     ]:
         assert finders.find(path), path
 

@@ -98,6 +98,12 @@ def test_landing_page_renders_all_charts(browser):
     assert max(layout["kpiHeights"]) - min(layout["kpiHeights"]) <= 4
 
     assert "Noto Sans" in browser.execute_script("return getComputedStyle(document.body).fontFamily")
+    assert (
+        browser.execute_script(
+            "return getComputedStyle(document.querySelector('header nav a[href=\"#global-evidence\"]')).color"
+        )
+        == "rgb(255, 255, 255)"
+    )
 
     assert browser.execute_script("return window.HopeChart.formatLabel('SOCIAL_POLICY')") == "Social Policy"
     assert browser.execute_script("return window.HopeChart.formatLabel('MULTI_PURPOSE')") == "Multi-Purpose Cash"
@@ -147,3 +153,33 @@ def test_landing_page_renders_all_charts(browser):
         """
     )
     assert zoom >= 1
+
+
+def test_landing_mobile_header_fits_viewport_and_switches_logo(browser):
+    browser.open("/")
+    browser.set_window_size(360, 800)
+    browser.sleep(0.5)
+
+    layout = browser.execute_script(
+        """
+        const header = document.querySelector('header');
+        return {
+            viewport: document.documentElement.clientWidth,
+            page: document.documentElement.scrollWidth,
+            header: header.scrollWidth,
+            desktopLanguageVisible: getComputedStyle(
+                document.querySelector('#public-language').closest('form')
+            ).display !== 'none'
+        };
+        """
+    )
+    assert layout["page"] <= layout["viewport"] + 1
+    assert layout["header"] <= layout["viewport"] + 1
+    assert layout["desktopLanguageVisible"] is False
+
+    browser.click("#public-mobile-menu summary")
+    browser.wait_for_element_visible("#mobile-language", timeout=5)
+    browser.select_option_by_value("#mobile-language", "fr")
+    browser.wait_for_text("Explorer les données", timeout=10)
+
+    assert "unicef-logo-white-fr.png" in browser.get_attribute("header img", "src")
