@@ -33,7 +33,38 @@ def test_ensure_default_periodic_task() -> None:
     task = ensure_default_periodic_task()
 
     assert task.task == DEFAULT_TASK_PATH
-    assert task.crontab.hour == "2"
+    assert task.crontab.hour == "*/3"
     assert task.crontab.minute == "0"
     assert task.enabled is True
     assert ensure_default_periodic_task().pk == task.pk
+
+
+@pytest.mark.django_db
+def test_ensure_default_periodic_task_updates_existing_schedule() -> None:
+    from django_celery_beat.models import CrontabSchedule, PeriodicTask
+
+    from hope_dashboard.utils.celery_beat import (
+        DEFAULT_TASK_NAME,
+        DEFAULT_TASK_PATH,
+        ensure_default_periodic_task,
+    )
+
+    old_crontab = CrontabSchedule.objects.create(
+        minute="0",
+        hour="2",
+        day_of_week="*",
+        day_of_month="*",
+        month_of_year="*",
+        timezone="UTC",
+    )
+    PeriodicTask.objects.create(
+        name=DEFAULT_TASK_NAME,
+        task=DEFAULT_TASK_PATH,
+        crontab=old_crontab,
+        enabled=False,
+    )
+
+    task = ensure_default_periodic_task()
+
+    assert task.crontab.hour == "*/3"
+    assert task.enabled is True

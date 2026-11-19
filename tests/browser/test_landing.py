@@ -108,6 +108,17 @@ def test_landing_page_renders_all_charts(browser):
     assert browser.execute_script("return window.HopeChart.formatLabel('SOCIAL_POLICY')") == "Social Policy"
     assert browser.execute_script("return window.HopeChart.formatLabel('MULTI_PURPOSE')") == "Multi-Purpose Cash"
 
+    money_labels = browser.execute_script(
+        """
+        const option = echarts.getInstanceByDom(document.getElementById('trends-chart')).getOption();
+        const formatter = option.yAxis[0].axisLabel.formatter;
+        return typeof formatter === 'function'
+            ? [formatter(50000000), formatter(1500000), formatter(1000000)]
+            : null;
+        """
+    )
+    assert money_labels == ["$50M", "$1.5M", "$1M"]
+
     sector_legend = browser.execute_script(
         """
         const option = echarts.getInstanceByDom(document.getElementById('sector-chart')).getOption();
