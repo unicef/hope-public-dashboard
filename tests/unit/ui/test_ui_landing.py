@@ -1,4 +1,5 @@
 import datetime as dt
+import re
 from pathlib import Path
 
 import pytest
@@ -60,9 +61,13 @@ def test_public_landing_page_is_open(client):
     assert "Cash Delivered (USD)" in content
     assert "Payments delivered" in content
     assert "Average transfer" in content
+    assert "Disclaimer: All figures shown are indicative only and may vary due to rounding" in content
+    assert "HOPE reach" not in content
+    assert "Frontline workforce assisted" not in content
     assert "Play years" in content
     assert "Data protection" in content
     assert "Methodology" in content
+    assert "https://www.unicef.org/documents/policy-personal-data-protection" in content
     assert content.count("logo-white-trimmed.png") == 1
     assert response.context["total_cash_disbursed"] == "1K"
     assert response.context["total_payments"] == "10"
@@ -137,6 +142,27 @@ def test_public_page_sets_content_security_policy(client):
     assert response.status_code == 200
     assert "default-src" in response["Content-Security-Policy"]
     assert response["X-Frame-Options"] == "SAMEORIGIN"
+
+
+def test_content_security_policy_does_not_allow_cdns(settings):
+    directives = settings.CONTENT_SECURITY_POLICY["DIRECTIVES"]
+    sources = [source for values in directives.values() for source in values]
+
+    assert not any("cdn" in source or "unpkg" in source or "jsdelivr" in source for source in sources)
+
+
+@pytest.mark.parametrize("url", ["/", reverse("ui:login")])
+def test_public_pages_use_only_local_assets(client, url):
+    response = client.get(url)
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    script_sources = re.findall(r'<script[^>]+src="([^"]+)"', content)
+    stylesheet_sources = re.findall(r'<link[^>]+href="([^"]+)"', content)
+
+    assert script_sources
+    assert all(source.startswith("/") for source in script_sources), script_sources
+    assert all(source.startswith("/") for source in stylesheet_sources), stylesheet_sources
 
 
 def test_public_css_contains_responsive_layout_utilities():

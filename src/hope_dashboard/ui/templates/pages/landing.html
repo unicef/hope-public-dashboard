@@ -155,10 +155,10 @@
                         {% translate "People & Families" %}
                     </div>
                     <div class="grid flex-1 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {% include "includes/kpi_card.html" with id="kpi-children" label="Children Reached" value=total_children|default:"0" note="HOPE reach" icon="baby" only %}
-                        {% include "includes/kpi_card.html" with id="kpi-families" label="Families Reached" value=total_households|default:"0" note="HOPE reach" icon="house" only %}
-                        {% include "includes/kpi_card.html" with id="kpi-individuals" label="Individuals Reached" value=total_individuals_reached|default:"0" note="People reached" icon="users" only %}
-                        {% include "includes/kpi_card.html" with id="kpi-social-workers" label="Social Workers Reached" value=total_social_workers|default:"0" note="Frontline workforce assisted" icon="heart-handshake" only %}
+                        {% include "includes/kpi_card.html" with id="kpi-children" label="Children Reached" value=total_children|default:"0" icon="baby" only %}
+                        {% include "includes/kpi_card.html" with id="kpi-families" label="Families Reached" value=total_households|default:"0" icon="house" only %}
+                        {% include "includes/kpi_card.html" with id="kpi-individuals" label="Individuals Reached" value=total_individuals_reached|default:"0" icon="users" only %}
+                        {% include "includes/kpi_card.html" with id="kpi-social-workers" label="Social Workers Reached" value=total_social_workers|default:"0" icon="heart-handshake" only %}
                     </div>
                 </div>
                 <div class="xl:col-span-1 flex flex-col">
@@ -167,7 +167,7 @@
                         {% translate "Cash" %}
                     </div>
                     <div class="flex-1">
-                        {% include "includes/kpi_card.html" with id="kpi-cash" label="Cash Delivered (USD)" value=total_cash_disbursed|default:"0" prefix="$" icon="banknote" payments_id="kpi-payments" payments_value=total_payments|default:"0" average_id="kpi-average-transfer" average_value=average_transfer|default:"0" only %}
+                        {% include "includes/kpi_card.html" with id="kpi-cash" label="Cash Delivered (USD)" value=total_cash_disbursed|default:"0" prefix="$" icon="banknote" payments_id="kpi-payments" payments_value=total_payments|default:"0" average_id="kpi-average-transfer" average_value=average_transfer|default:"0" disclaimer=True only %}
                     </div>
                 </div>
             </div>
@@ -272,7 +272,7 @@
             </div>
             <!-- Trust links -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <a href="https://unicef.sharepoint.com/:w:/t/EMOPS-NYHQ-HCT/ETNzq6Frl5JPq6U0YLp7KXEBGRRp4uP23iizPHGmZfa61A?e=NlZoym"
+                <a href="https://www.unicef.org/documents/policy-personal-data-protection"
                    target="_blank"
                    rel="noopener"
                    class="bg-white p-5 rounded-lg border border-black/10 shadow-sm hover:border-unicef-blue hover:shadow-md transition group">
