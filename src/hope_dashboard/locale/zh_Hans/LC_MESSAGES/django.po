@@ -845,15 +845,19 @@ msgstr "已发放现金（美元）"
 
 #: src/hope_live/templates/pages/landing.html:179
 msgid "Payments delivered"
-msgstr "已发放付款"
+msgstr "已发放笔数"
 
 #: src/hope_live/templates/pages/landing.html:184
 msgid "Average transfer"
-msgstr "平均每笔转移金额"
+msgstr "平均发放金额"
 
 #: src/hope_live/templates/pages/landing.html:186
 msgid "per transfer"
-msgstr "每笔转移"
+msgstr "/ 笔"
+
+#: src/hope_live/templates/pages/landing.html:190
+msgid "Disclaimer: All figures shown are indicative only and may vary due to rounding"
+msgstr "免责声明：所示数据仅供参考，因四舍五入可能存在差异"
 
 #: src/hope_live/templates/pages/landing.html:202
 msgid "Where cash assistance reaches children and families"
@@ -861,7 +865,7 @@ msgstr "现金援助惠及儿童和家庭的地区分布"
 
 #: src/hope_live/templates/pages/landing.html:203
 msgid "Country-level reach for the selected year"
-msgstr "所选年份的国家覆盖率"
+msgstr "所选年份各国覆盖情况"
 
 #: src/hope_live/templates/pages/landing.html:207
 msgid "Map metric"
@@ -880,7 +884,7 @@ msgstr "社会工作者"
 #: src/hope_live/templates/pages/landing.html:216
 #: src/hope_live/templates/pages/landing.html:332
 msgid "Play years"
-msgstr "播放年份"
+msgstr "按年回放"
 
 #: src/hope_live/templates/pages/landing.html:223
 msgid "Reset view"
@@ -905,7 +909,7 @@ msgstr "按部门分列的现金援助"
 
 #: src/hope_live/templates/pages/landing.html:248
 msgid "Share of delivered cash by programme sector."
-msgstr "按项目部门分列的已发放现金援助占比。"
+msgstr "各项目部门已发放现金援助占比。"
 
 #: src/hope_live/templates/pages/landing.html:248
 #: src/hope_live/templates/pages/landing.html:281
@@ -914,7 +918,7 @@ msgstr "点击扇区进行筛选。"
 
 #: src/hope_live/templates/pages/landing.html:265
 msgid "Trends over time"
-msgstr "随时间变化的趋势"
+msgstr "时间变化趋势"
 
 #: src/hope_live/templates/pages/landing.html:266
 msgid ""
@@ -942,11 +946,15 @@ msgstr "阅读联合国儿童基金会数据保护政策。"
 #: src/hope_live/templates/pages/landing.html:307
 #: src/hope_live/templates/public_layout.html:91
 msgid "Methodology"
-msgstr "方法"
+msgstr "统计方法"
 
 #: src/hope_live/templates/pages/landing.html:309
 msgid "How HOPE data is produced and the standards applied."
 msgstr "HOPE 数据的生成方式及适用标准。"
+
+#: src/hope_live/templates/pages/landing.html:321
+msgid "Year animation is disabled by your reduced-motion preference."
+msgstr "由于您启用了减弱动态效果偏好设置，年份播放动画已禁用。"
 
 #: src/hope_live/templates/pages/landing.html:322
 msgid "No data"
@@ -1021,40 +1029,72 @@ msgid "Social Protection"
 msgstr "社会保护"
 
 #: src/hope_live/templates/pages/landing.html:348
+msgid "Social Policy"
+msgstr "社会政策"
+
+#: src/hope_live/templates/pages/landing.html:349
 msgid "Multi-purpose Cash"
 msgstr "多用途现金援助"
 
-#: src/hope_live/templates/pages/landing.html:349
+#: src/hope_live/templates/pages/landing.html:350
 msgid "Winterization"
 msgstr "过冬援助"
 
-#: src/hope_live/templates/pages/landing.html:350
+#: src/hope_live/templates/pages/landing.html:351
 msgid "Mobile Money"
 msgstr "移动货币"
 
-#: src/hope_live/templates/pages/landing.html:351
+#: src/hope_live/templates/pages/landing.html:352
 msgid "Bank Transfer"
 msgstr "银行转账"
 
-#: src/hope_live/templates/pages/landing.html:352
+#: src/hope_live/templates/pages/landing.html:353
+msgid "Transfer to Account"
+msgstr "账户转账"
+
+#: src/hope_live/templates/pages/landing.html:354
 msgid "Cash in Hand"
 msgstr "直接发放现金"
 
-#: src/hope_live/templates/pages/landing.html:353
+#: src/hope_live/templates/pages/landing.html:355
 msgid "Cash on Site"
 msgstr "现场发放现金"
 
-#: src/hope_live/templates/pages/landing.html:354
+#: src/hope_live/templates/pages/landing.html:356
+msgid "Cash Over the Counter"
+msgstr "柜台现金支取"
+
+#: src/hope_live/templates/pages/landing.html:357
 msgid "Paper Voucher"
 msgstr "纸质代金券"
 
-#: src/hope_live/templates/pages/landing.html:355
+#: src/hope_live/templates/pages/landing.html:358
 msgid "e-Voucher"
 msgstr "电子代金券"
 
-#: src/hope_live/templates/pages/landing.html:356
+#: src/hope_live/templates/pages/landing.html:359
+msgid "Voucher"
+msgstr "代金券"
+
+#: src/hope_live/templates/pages/landing.html:360
 msgid "Prepaid Card"
 msgstr "预付卡"
+
+#: src/hope_live/templates/pages/landing.html:361
+msgid "ATM Card"
+msgstr "ATM 卡"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:7
+msgid "HOPE Public Dashboard"
+msgstr "HOPE 公共仪表板"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:10
+msgid "Login with Azure"
+msgstr "使用 Azure 登录"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:12
+msgid "Use your UNICEF account to continue."
+msgstr "请使用您的联合国儿童基金会账户继续。"
 
 #: src/hope_live/templates/pages/login.html:16
 msgid "HOPE Live Dashboard"

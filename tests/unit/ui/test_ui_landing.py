@@ -84,16 +84,82 @@ def test_landing_includes_public_charts_data_endpoint(client):
 
 
 @pytest.mark.parametrize(
-    ("language", "expected", "logo"),
+    ("language", "expected", "logo", "expected_strings"),
     [
-        ("es", "Explorar la evidencia", "unicef-logo-white-es.png"),
-        ("fr", "Explorer les données", "unicef-logo-white-fr.png"),
-        ("ar", "استكشاف الأدلة", "unicef-logo-white-ar.png"),
-        ("ru", "Изучить данные", "unicef-logo-white-ru.png"),
-        ("zh-hans", "探索数据", "unicef-logo-white-zh.png"),
+        (
+            "es",
+            "Explorar la evidencia",
+            "unicef-logo-white-es.png",
+            [
+                "Política social",
+                "Transferencia a cuenta",
+                "Efectivo por ventanilla",
+                "Tarjeta de cajero automático",
+                "Aviso legal: Todas las cifras mostradas son meramente indicativas",
+                "1 de enero de 2024",
+            ],
+        ),
+        (
+            "fr",
+            "Explorer les données",
+            "unicef-logo-white-fr.png",
+            [
+                "Politique sociale",
+                "Virement sur compte",
+                "Retrait d\\u0027espèces au guichet",
+                "Carte bancaire (GAB)",
+                "Avertissement : tous les chiffres indiqués le sont à titre indicatif",
+                "Transfert moyen",
+                "1 janvier 2024",
+            ],
+        ),
+        (
+            "ar",
+            "استكشاف الأدلة",
+            "unicef-logo-white-ar.png",
+            [
+                "السياسات الاجتماعية",
+                "تحويل إلى حساب",
+                "صرف نقدي عبر منافذ الخدمة",
+                "بطاقة صراف آلي",
+                "إخلاء مسؤولية: جميع الأرقام المعروضة استرشادية فقط",
+            ],
+        ),
+        (
+            "ru",
+            "Изучить данные",
+            "unicef-logo-white-ru.png",
+            [
+                "Социальная политика",
+                "Перевод на счёт",
+                "Наличные через кассу",
+                "Банковская карта (банкомат)",
+                "Примечание: все представленные данные носят ориентировочный характер",
+            ],
+        ),
+        (
+            "zh-hans",
+            "探索数据",
+            "unicef-logo-white-zh.png",
+            [
+                "社会政策",
+                "账户转账",
+                "柜台现金支取",
+                "代金券",
+                "ATM 卡",
+                "免责声明：所示数据仅供参考，因四舍五入可能存在差异",
+                "平均发放金额",
+                "已发放笔数",
+                "所选年份各国覆盖情况",
+                "统计方法",
+                "2024年1月1日",
+            ],
+        ),
     ],
 )
-def test_language_switch_renders_landing_translations(client, language, expected, logo):
+def test_language_switch_renders_landing_translations(client, language, expected, logo, expected_strings):
+    _financial()
+    _demographic()
     response = client.post(reverse("set_language"), {"language": language, "next": "/"})
     assert response.status_code == 302
 
@@ -102,6 +168,8 @@ def test_language_switch_renders_landing_translations(client, language, expected
 
     assert response.status_code == 200
     assert expected in content
+    for expected_str in expected_strings:
+        assert expected_str in content, f"Missing {expected_str!r} in {language}"
     assert logo in content
     assert f'lang="{language}"' in content
     if language == "ar":

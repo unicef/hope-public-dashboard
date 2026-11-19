@@ -897,6 +897,10 @@ msgstr "Transferencia promedio"
 msgid "per transfer"
 msgstr "por transferencia"
 
+#: src/hope_live/templates/pages/landing.html:190
+msgid "Disclaimer: All figures shown are indicative only and may vary due to rounding"
+msgstr "Aviso legal: Todas las cifras mostradas son meramente indicativas y pueden variar debido al redondeo"
+
 #: src/hope_live/templates/pages/landing.html:202
 msgid "Where cash assistance reaches children and families"
 msgstr "Dónde llega la asistencia monetaria a niños y familias"
@@ -996,6 +1000,10 @@ msgstr "Metodología"
 msgid "How HOPE data is produced and the standards applied."
 msgstr "Cómo se producen los datos de HOPE y las normas aplicadas."
 
+#: src/hope_live/templates/pages/landing.html:321
+msgid "Year animation is disabled by your reduced-motion preference."
+msgstr "La animación de años está desactivada debido a su preferencia de movimiento reducido."
+
 #: src/hope_live/templates/pages/landing.html:322
 msgid "No data"
 msgstr "Sin datos"
@@ -1069,40 +1077,72 @@ msgid "Social Protection"
 msgstr "Protección social"
 
 #: src/hope_live/templates/pages/landing.html:348
+msgid "Social Policy"
+msgstr "Política social"
+
+#: src/hope_live/templates/pages/landing.html:349
 msgid "Multi-purpose Cash"
 msgstr "Efectivo multipropósito"
 
-#: src/hope_live/templates/pages/landing.html:349
+#: src/hope_live/templates/pages/landing.html:350
 msgid "Winterization"
 msgstr "Asistencia de invierno"
 
-#: src/hope_live/templates/pages/landing.html:350
+#: src/hope_live/templates/pages/landing.html:351
 msgid "Mobile Money"
 msgstr "Dinero móvil"
 
-#: src/hope_live/templates/pages/landing.html:351
+#: src/hope_live/templates/pages/landing.html:352
 msgid "Bank Transfer"
 msgstr "Transferencia bancaria"
 
-#: src/hope_live/templates/pages/landing.html:352
+#: src/hope_live/templates/pages/landing.html:353
+msgid "Transfer to Account"
+msgstr "Transferencia a cuenta"
+
+#: src/hope_live/templates/pages/landing.html:354
 msgid "Cash in Hand"
 msgstr "Efectivo en mano"
 
-#: src/hope_live/templates/pages/landing.html:353
+#: src/hope_live/templates/pages/landing.html:355
 msgid "Cash on Site"
 msgstr "Efectivo en punto de entrega"
 
-#: src/hope_live/templates/pages/landing.html:354
+#: src/hope_live/templates/pages/landing.html:356
+msgid "Cash Over the Counter"
+msgstr "Efectivo por ventanilla"
+
+#: src/hope_live/templates/pages/landing.html:357
 msgid "Paper Voucher"
 msgstr "Cupón impreso"
 
-#: src/hope_live/templates/pages/landing.html:355
+#: src/hope_live/templates/pages/landing.html:358
 msgid "e-Voucher"
 msgstr "Cupón electrónico"
 
-#: src/hope_live/templates/pages/landing.html:356
+#: src/hope_live/templates/pages/landing.html:359
+msgid "Voucher"
+msgstr "Cupón"
+
+#: src/hope_live/templates/pages/landing.html:360
 msgid "Prepaid Card"
 msgstr "Tarjeta prepago"
+
+#: src/hope_live/templates/pages/landing.html:361
+msgid "ATM Card"
+msgstr "Tarjeta de cajero automático"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:7
+msgid "HOPE Public Dashboard"
+msgstr "Panel público de HOPE"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:10
+msgid "Login with Azure"
+msgstr "Iniciar sesión con Azure"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:12
+msgid "Use your UNICEF account to continue."
+msgstr "Utilice su cuenta de UNICEF para continuar."
 
 #: src/hope_live/templates/pages/login.html:16
 msgid "HOPE Live Dashboard"

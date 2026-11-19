@@ -97,7 +97,7 @@ class LandingView(TemplateView):
 
         if latest_data_date:
             latest_data_str = date_format(latest_data_date, "F Y")
-            latest_data_exact = date_format(latest_data_date, "d M Y")
+            latest_data_exact = date_format(latest_data_date, "DATE_FORMAT", use_l10n=True)
         else:
             latest_data_str = date_format(dt.date(2026, 5, 1), "F Y")
             latest_data_exact = latest_data_str

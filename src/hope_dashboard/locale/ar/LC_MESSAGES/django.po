@@ -881,11 +881,15 @@ msgstr "المدفوعات المسلّمة"
 
 #: src/hope_live/templates/pages/landing.html:184
 msgid "Average transfer"
-msgstr "متوسط قيمة التحويل"
+msgstr "متوسط التحويل"
 
 #: src/hope_live/templates/pages/landing.html:186
 msgid "per transfer"
 msgstr "لكل تحويل"
+
+#: src/hope_live/templates/pages/landing.html:190
+msgid "Disclaimer: All figures shown are indicative only and may vary due to rounding"
+msgstr "إخلاء مسؤولية: جميع الأرقام المعروضة استرشادية فقط وقد تختلف بسبب التقريب"
 
 #: src/hope_live/templates/pages/landing.html:202
 msgid "Where cash assistance reaches children and families"
@@ -982,6 +986,10 @@ msgstr "المنهجية"
 msgid "How HOPE data is produced and the standards applied."
 msgstr "كيف يتم إنتاج بيانات HOPE والمعايير المطبقة."
 
+#: src/hope_live/templates/pages/landing.html:321
+msgid "Year animation is disabled by your reduced-motion preference."
+msgstr "تم تعطيل تحريك السنوات بسبب تفضيل تقليل الحركة لديك."
+
 #: src/hope_live/templates/pages/landing.html:322
 msgid "No data"
 msgstr "لا توجد بيانات"
@@ -1055,40 +1063,72 @@ msgid "Social Protection"
 msgstr "الحماية الاجتماعية"
 
 #: src/hope_live/templates/pages/landing.html:348
+msgid "Social Policy"
+msgstr "السياسات الاجتماعية"
+
+#: src/hope_live/templates/pages/landing.html:349
 msgid "Multi-purpose Cash"
 msgstr "النقد متعدد الأغراض"
 
-#: src/hope_live/templates/pages/landing.html:349
+#: src/hope_live/templates/pages/landing.html:350
 msgid "Winterization"
 msgstr "المساعدات الشتوية"
 
-#: src/hope_live/templates/pages/landing.html:350
+#: src/hope_live/templates/pages/landing.html:351
 msgid "Mobile Money"
 msgstr "الأموال عبر الهاتف المحمول"
 
-#: src/hope_live/templates/pages/landing.html:351
+#: src/hope_live/templates/pages/landing.html:352
 msgid "Bank Transfer"
 msgstr "تحويل مصرفي"
 
-#: src/hope_live/templates/pages/landing.html:352
+#: src/hope_live/templates/pages/landing.html:353
+msgid "Transfer to Account"
+msgstr "تحويل إلى حساب"
+
+#: src/hope_live/templates/pages/landing.html:354
 msgid "Cash in Hand"
 msgstr "نقد باليد"
 
-#: src/hope_live/templates/pages/landing.html:353
+#: src/hope_live/templates/pages/landing.html:355
 msgid "Cash on Site"
 msgstr "الصرف النقدي في الموقع"
 
-#: src/hope_live/templates/pages/landing.html:354
+#: src/hope_live/templates/pages/landing.html:356
+msgid "Cash Over the Counter"
+msgstr "صرف نقدي عبر منافذ الخدمة"
+
+#: src/hope_live/templates/pages/landing.html:357
 msgid "Paper Voucher"
 msgstr "قسيمة ورقية"
 
-#: src/hope_live/templates/pages/landing.html:355
+#: src/hope_live/templates/pages/landing.html:358
 msgid "e-Voucher"
 msgstr "قسيمة إلكترونية"
 
-#: src/hope_live/templates/pages/landing.html:356
+#: src/hope_live/templates/pages/landing.html:359
+msgid "Voucher"
+msgstr "قسيمة"
+
+#: src/hope_live/templates/pages/landing.html:360
 msgid "Prepaid Card"
 msgstr "بطاقة مسبقة الدفع"
+
+#: src/hope_live/templates/pages/landing.html:361
+msgid "ATM Card"
+msgstr "بطاقة صراف آلي"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:7
+msgid "HOPE Public Dashboard"
+msgstr "لوحة معلومات HOPE العامة"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:10
+msgid "Login with Azure"
+msgstr "تسجيل الدخول عبر Azure"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:12
+msgid "Use your UNICEF account to continue."
+msgstr "استخدم حساب اليونيسف الخاص بك للمتابعة."
 
 #: src/hope_live/templates/pages/login.html:16
 msgid "HOPE Live Dashboard"

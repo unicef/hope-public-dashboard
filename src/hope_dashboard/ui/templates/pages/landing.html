@@ -333,15 +333,20 @@
 {% translate "Nutrition" as t_dim_nutrition %}
 {% translate "Child Protection" as t_dim_child_protection %}
 {% translate "Social Protection" as t_dim_social_protection %}
+{% translate "Social Policy" as t_dim_social_policy %}
 {% translate "Multi-purpose Cash" as t_dim_mpc %}
 {% translate "Winterization" as t_dim_winterization %}
 {% translate "Mobile Money" as t_dim_mobile_money %}
 {% translate "Bank Transfer" as t_dim_bank_transfer %}
+{% translate "Transfer to Account" as t_dim_transfer_to_account %}
 {% translate "Cash in Hand" as t_dim_cash_in_hand %}
 {% translate "Cash on Site" as t_dim_cash_on_site %}
+{% translate "Cash Over the Counter" as t_dim_cash_otc %}
 {% translate "Paper Voucher" as t_dim_paper_voucher %}
 {% translate "e-Voucher" as t_dim_evoucher %}
+{% translate "Voucher" as t_dim_voucher %}
 {% translate "Prepaid Card" as t_dim_prepaid_card %}
+{% translate "ATM Card" as t_dim_atm_card %}
 document.addEventListener('DOMContentLoaded', async function () {
     const docLang = document.documentElement.lang || 'en';
     const countryKey = window.HopeChart?.countryKey || (value => String(value || '').toLowerCase());
@@ -364,7 +369,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         'child_protection': '{{ t_dim_child_protection|escapejs }}',
         'social protection': '{{ t_dim_social_protection|escapejs }}',
         'social_protection': '{{ t_dim_social_protection|escapejs }}',
+        'social policy': '{{ t_dim_social_policy|escapejs }}',
+        'social_policy': '{{ t_dim_social_policy|escapejs }}',
         'multi-purpose cash': '{{ t_dim_mpc|escapejs }}',
+        'multi purpose cash': '{{ t_dim_mpc|escapejs }}',
+        'multi_purpose_cash': '{{ t_dim_mpc|escapejs }}',
+        'multi purpose': '{{ t_dim_mpc|escapejs }}',
+        'multi_purpose': '{{ t_dim_mpc|escapejs }}',
         'multipurpose cash': '{{ t_dim_mpc|escapejs }}',
         'mpc': '{{ t_dim_mpc|escapejs }}',
         'winterization': '{{ t_dim_winterization|escapejs }}',
@@ -372,6 +383,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         'mobile_money': '{{ t_dim_mobile_money|escapejs }}',
         'bank transfer': '{{ t_dim_bank_transfer|escapejs }}',
         'bank_transfer': '{{ t_dim_bank_transfer|escapejs }}',
+        'transfer to account': '{{ t_dim_transfer_to_account|escapejs }}',
+        'transfer_to_account': '{{ t_dim_transfer_to_account|escapejs }}',
         'cash in hand': '{{ t_dim_cash_in_hand|escapejs }}',
         'cash_in_hand': '{{ t_dim_cash_in_hand|escapejs }}',
         'direct cash': '{{ t_dim_cash_in_hand|escapejs }}',
@@ -379,12 +392,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         'cash_on_site': '{{ t_dim_cash_on_site|escapejs }}',
         'outreach payment': '{{ t_dim_cash_on_site|escapejs }}',
         'outreach payments': '{{ t_dim_cash_on_site|escapejs }}',
+        'cash over the counter': '{{ t_dim_cash_otc|escapejs }}',
+        'cash_over_the_counter': '{{ t_dim_cash_otc|escapejs }}',
         'paper voucher': '{{ t_dim_paper_voucher|escapejs }}',
         'paper_voucher': '{{ t_dim_paper_voucher|escapejs }}',
         'e-voucher': '{{ t_dim_evoucher|escapejs }}',
         'electronic voucher': '{{ t_dim_evoucher|escapejs }}',
+        'voucher': '{{ t_dim_voucher|escapejs }}',
         'prepaid card': '{{ t_dim_prepaid_card|escapejs }}',
-        'debit card': '{{ t_dim_prepaid_card|escapejs }}'
+        'pre-paid card': '{{ t_dim_prepaid_card|escapejs }}',
+        'pre paid card': '{{ t_dim_prepaid_card|escapejs }}',
+        'pre_paid_card': '{{ t_dim_prepaid_card|escapejs }}',
+        'debit card': '{{ t_dim_prepaid_card|escapejs }}',
+        'atm card': '{{ t_dim_atm_card|escapejs }}',
+        'atm_card': '{{ t_dim_atm_card|escapejs }}'
     };
     const translateDimension = value => {
         if (!value) return '{{ t_not_specified|escapejs }}';

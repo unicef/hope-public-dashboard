@@ -890,11 +890,15 @@ msgstr "Осуществлено выплат"
 
 #: src/hope_live/templates/pages/landing.html:184
 msgid "Average transfer"
-msgstr "Средний размер перевода"
+msgstr "Средняя выплата"
 
 #: src/hope_live/templates/pages/landing.html:186
 msgid "per transfer"
 msgstr "за перевод"
+
+#: src/hope_live/templates/pages/landing.html:190
+msgid "Disclaimer: All figures shown are indicative only and may vary due to rounding"
+msgstr "Примечание: все представленные данные носят ориентировочный характер и могут незначительно отличаться из-за округления"
 
 #: src/hope_live/templates/pages/landing.html:202
 msgid "Where cash assistance reaches children and families"
@@ -995,6 +999,10 @@ msgstr "Методология"
 msgid "How HOPE data is produced and the standards applied."
 msgstr "Как формируются данные HOPE и применяемые стандарты."
 
+#: src/hope_live/templates/pages/landing.html:321
+msgid "Year animation is disabled by your reduced-motion preference."
+msgstr "Анимация по годам отключена в соответствии с вашей настройкой уменьшения движения."
+
 #: src/hope_live/templates/pages/landing.html:322
 msgid "No data"
 msgstr "Нет данных"
@@ -1068,40 +1076,72 @@ msgid "Social Protection"
 msgstr "Социальная защита"
 
 #: src/hope_live/templates/pages/landing.html:348
+msgid "Social Policy"
+msgstr "Социальная политика"
+
+#: src/hope_live/templates/pages/landing.html:349
 msgid "Multi-purpose Cash"
 msgstr "Многоцелевая денежная помощь"
 
-#: src/hope_live/templates/pages/landing.html:349
+#: src/hope_live/templates/pages/landing.html:350
 msgid "Winterization"
 msgstr "Подготовка к зиме"
 
-#: src/hope_live/templates/pages/landing.html:350
+#: src/hope_live/templates/pages/landing.html:351
 msgid "Mobile Money"
 msgstr "Мобильные деньги"
 
-#: src/hope_live/templates/pages/landing.html:351
+#: src/hope_live/templates/pages/landing.html:352
 msgid "Bank Transfer"
 msgstr "Банковский перевод"
 
-#: src/hope_live/templates/pages/landing.html:352
+#: src/hope_live/templates/pages/landing.html:353
+msgid "Transfer to Account"
+msgstr "Перевод на счёт"
+
+#: src/hope_live/templates/pages/landing.html:354
 msgid "Cash in Hand"
 msgstr "Наличные средства"
 
-#: src/hope_live/templates/pages/landing.html:353
+#: src/hope_live/templates/pages/landing.html:355
 msgid "Cash on Site"
 msgstr "Выдача наличных на месте"
 
-#: src/hope_live/templates/pages/landing.html:354
+#: src/hope_live/templates/pages/landing.html:356
+msgid "Cash Over the Counter"
+msgstr "Наличные через кассу"
+
+#: src/hope_live/templates/pages/landing.html:357
 msgid "Paper Voucher"
 msgstr "Бумажный ваучер"
 
-#: src/hope_live/templates/pages/landing.html:355
+#: src/hope_live/templates/pages/landing.html:358
 msgid "e-Voucher"
 msgstr "Электронный ваучер"
 
-#: src/hope_live/templates/pages/landing.html:356
+#: src/hope_live/templates/pages/landing.html:359
+msgid "Voucher"
+msgstr "Ваучер"
+
+#: src/hope_live/templates/pages/landing.html:360
 msgid "Prepaid Card"
 msgstr "Предоплаченная карта"
+
+#: src/hope_live/templates/pages/landing.html:361
+msgid "ATM Card"
+msgstr "Банковская карта (банкомат)"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:7
+msgid "HOPE Public Dashboard"
+msgstr "Публичная панель HOPE"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:10
+msgid "Login with Azure"
+msgstr "Войти через Azure"
+
+#: src/hope_dashboard/ui/templates/registration/login.html:12
+msgid "Use your UNICEF account to continue."
+msgstr "Используйте учётную запись ЮНИСЕФ для продолжения."
 
 #: src/hope_live/templates/pages/login.html:16
 msgid "HOPE Live Dashboard"
