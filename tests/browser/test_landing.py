@@ -102,8 +102,13 @@ def test_landing_page_renders_all_charts(browser):
         browser.execute_script(
             "return getComputedStyle(document.querySelector('header nav a[href=\"#global-evidence\"]')).color"
         )
-        == "rgb(255, 255, 255)"
+        == "rgb(0, 0, 0)"
     )
+    assert (
+        browser.execute_script("return getComputedStyle(document.querySelector('header a span')).color")
+        == "rgb(0, 0, 0)"
+    )
+    assert browser.execute_script("return document.querySelector('#landing-hero img').naturalWidth") > 0
 
     assert browser.execute_script("return window.HopeChart.formatLabel('SOCIAL_POLICY')") == "Social Policy"
     assert browser.execute_script("return window.HopeChart.formatLabel('MULTI_PURPOSE')") == "Multi-Purpose Cash"

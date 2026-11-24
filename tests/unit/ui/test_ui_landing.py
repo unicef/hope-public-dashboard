@@ -262,7 +262,7 @@ def test_public_assets_are_available():
         "js/chart_helpers.js",
         "js/public_theme.js",
         "data/world.json",
-        "images/background.png",
+        "images/hero-unicef.jpg",
         "images/unicef-logo-white-en.png",
         "images/unicef-logo-white-fr.png",
         "images/unicef-logo-white-es.png",
