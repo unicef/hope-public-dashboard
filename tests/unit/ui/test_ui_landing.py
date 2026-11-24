@@ -67,6 +67,8 @@ def test_public_landing_page_is_open(client):
     assert "Play years" in content
     assert "Data protection" in content
     assert "Methodology" in content
+    assert "© UNICEF/UNI503920/Madina Qati Musadiq" in content
+    assert "© United Nations Children’s Fund (UNICEF)" in content
     assert "https://www.unicef.org/documents/policy-personal-data-protection" in content
     assert content.count("unicef-logo-white-en.png") == 1
     assert response.context["total_cash_disbursed"] == "1K"
